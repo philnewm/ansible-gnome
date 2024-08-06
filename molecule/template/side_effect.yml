@@ -1,0 +1,9 @@
+---
+
+- name: Converge
+  hosts: localhost
+
+  tasks:
+    - name: Side-effect test
+      ansible.builtin.debug:
+        msg: "Side-effect successfull"

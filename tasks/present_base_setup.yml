@@ -1,0 +1,26 @@
+---
+
+# gnome base setup
+
+- name: Install Gnome packages
+  when: item not in ansible_facts.packages
+  loop: "{{ gnome_packages[ansible_os_family] | flatten(1) }}"
+  become: true
+  ansible.builtin.package:
+    name: "{{ item }}"
+    state: present
+
+- name: Remove obsolete Gnome packages
+  become: true
+  loop: "{{ obsolete_packages[ansible_os_family] | flatten(1) }}"
+  ansible.builtin.package:
+    name: "{{ item }}"
+    state: absent
+
+- name: Get Gnome version
+  ansible.builtin.shell:
+    cmd: "gnome-shell --version | awk '{print $3}' | cut -d'.' -f1"
+  register: gnome_major_version
+  changed_when: false
+
+...

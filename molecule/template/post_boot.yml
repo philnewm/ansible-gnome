@@ -1,0 +1,27 @@
+---
+
+- name: Ensure the destination directory exists on the control node
+  ansible.builtin.file:
+    path: ./boot_analysis
+    state: directory
+    mode: "0744"
+  delegate_to: localhost
+
+- name: Run systemd-analyze plot
+  ansible.builtin.shell:
+    cmd: systemd-analyze plot > /tmp/boot_analysis_{{ ansible_distribution }}_$(date +%Y%m%d%H%M%S).svg
+  register: command_result
+  changed_when: command_result.rc == 0
+
+- name: Find plotted files
+  ansible.builtin.find:
+    path: "/tmp/"
+    pattern: "boot_analysis_*.svg"
+  register: svg_file
+
+- name: Fetch boot analysis file
+  ansible.builtin.fetch:
+    src: "{{ svg_file.files[0].path }}"
+    dest: boot_analysis/
+
+...

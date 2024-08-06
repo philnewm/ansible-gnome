@@ -1,0 +1,157 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: vagrant
+  parallel: true
+  snapshot: initial
+  provider:
+    name: virtualbox
+    type: virtualbox
+lint: |
+  set -e
+  yamllint
+  ansible-lint
+# Warning redownloading and updating base images can cause setup to break caused by download mirror troubles
+# TODO boot VMs from local updated images - use packer
+# INFO change to updated local network images might also improve speed 
+platforms:
+  # Warning currently broken probably due to missing virtual box guest additons
+  # - name: CentosStream9
+  #   box: centos/stream9
+  #   # box_url: https://cloud.centos.org/centos/9-stream/x86_64/images/CentOS-Stream-Vagrant-9-20230501.0.x86_64.vagrant-virtualbox.box
+  #   memory: 2048
+  #   cpus: 2
+  #   interfaces:
+  #     - auto_config: true
+  #       network_name: private_network
+  #       type: "static"
+  #       ip: "192.168.56.10"
+  #   provider_raw_config_args:
+  #     - "customize ['modifyvm', :id, '--uartmode1', 'disconnected']"
+  #     - "customize ['modifyvm', :id, '--graphicscontroller', 'vmsvga']"
+  #     - "customize ['modifyvm', :id, '--vram', '256']"
+  #     - "customize ['modifyvm', :id, '--accelerate-3d', 'off']"
+  #     - "customize ['modifyvm', :id, '--accelerate-2d-video', 'on']"
+  #   groups:
+  #     - client
+  - name: Alma9
+    box: almalinux/9
+    memory: 2048
+    cpus: 2
+    interfaces:
+      - auto_config: true
+        network_name: private_network
+        type: "static"
+        ip: "192.168.56.20"
+    # TODO create one base configuration + only host specififc values (ip) should be defined per host
+    provider_raw_config_args:
+      - "customize ['modifyvm', :id, '--uartmode1', 'disconnected']"
+      - "customize ['modifyvm', :id, '--graphicscontroller', 'vmsvga']"
+      - "customize ['modifyvm', :id, '--vram', '256']"
+      - "customize ['modifyvm', :id, '--accelerate-3d', 'off']"
+      - "customize ['modifyvm', :id, '--accelerate-2d-video', 'on']"
+    groups:
+      - client
+  # - name: Rocky9
+  #   box: rockylinux/9
+  #   memory: 2048
+  #   cpus: 2
+  #   interfaces:
+  #     - auto_config: true
+  #       network_name: private_network
+  #       type: "static"
+  #       ip: "192.168.56.30"
+  #   provider_raw_config_args:
+  #     - "customize ['modifyvm', :id, '--uartmode1', 'disconnected']"
+  #     - "customize ['modifyvm', :id, '--graphicscontroller', 'vmsvga']"
+  #     - "customize ['modifyvm', :id, '--vram', '256']"
+  #     - "customize ['modifyvm', :id, '--accelerate-3d', 'off']"
+  #     - "customize ['modifyvm', :id, '--accelerate-2d-video', 'on']"
+  #   groups:
+  #     - client
+  # - name: Ubuntu2210
+  #   box: ubuntu/jammy64
+  #   memory: 2048
+  #   cpus: 2
+  #   interfaces:
+  #     - auto_config: true
+  #       network_name: private_network
+  #       type: "static"
+  #       ip: "192.168.56.40"
+  #   provider_raw_config_args:
+  #     - "customize ['modifyvm', :id, '--uartmode1', 'disconnected']"
+  #     - "customize ['modifyvm', :id, '--graphicscontroller', 'vmsvga']"
+  #     - "customize ['modifyvm', :id, '--vram', '256']"
+  #     - "customize ['modifyvm', :id, '--accelerate-3d', 'off']"
+  #     - "customize ['modifyvm', :id, '--accelerate-2d-video', 'on']"
+  #   groups:
+  #     - client
+  # - name: Debian12
+  #   box: debian/bookworm64
+  #   memory: 2048
+  #   cpus: 2
+  #   interfaces:
+  #     - auto_config: true
+  #       network_name: private_network
+  #       type: "static"
+  #       ip: "192.168.56.50"
+  #   provider_raw_config_args:
+  #     - "customize ['modifyvm', :id, '--uartmode1', 'disconnected']"
+  #     - "customize ['modifyvm', :id, '--graphicscontroller', 'vmsvga']"
+  #     - "customize ['modifyvm', :id, '--vram', '256']"
+  #     - "customize ['modifyvm', :id, '--accelerate-3d', 'off']"
+  #     - "customize ['modifyvm', :id, '--accelerate-2d-video', 'on']"
+  #   groups:
+  #     - client
+provisioner:
+  name: ansible
+  env:
+    # ANSIBLE_VERBOSITY: 3
+    ANSIBLE_DIFF_ALWAYS: false
+  playbooks:
+    create: ../template/create.yml
+    prepare: ../template/prepare.yml
+    converge: ../template/converge.yml
+    side_effect: ../template/side_effect.yml
+    verify: ../template/verify.yml
+    cleanup: ../template/cleanup.yml
+  inventory:
+    group_vars:
+      all:
+        ansible_python_interpreter: /usr/bin/python3
+        mount_targets:
+          - { share: "documents", mount: "documents" }
+          - { share: "learning", mount: "learning" }
+          - { share: "library", mount: "library" }
+          - { share: "ressources", mount: "ressources" }
+          - { share: "usb_backup", mount: "archive" }
+        install_name: install 
+  config_options:
+    defaults:
+      diff: True
+      gathering: smart
+      fact_caching_timeout: 3600
+      fact_caching: jsonfile
+      fact_caching_connection: /tmp/ansible_fact_cache
+      stdout_callback: debug
+      callbacks_enabled: ansible.posix.profile_tasks
+    connection:
+      # WARNING disable "requiretty" in hosts sudoers file on case of errors
+      pipelining: true
+    env:
+      ANSIBLE_FORCE_COLOR: "true"
+verifier:
+  name: ansible
+scenario:
+  test_sequence:
+      - dependency
+      - syntax
+      - create
+      - prepare
+      - converge
+      - idempotence
+      - side_effect
+      - verify
+      - cleanup
+      - destroy

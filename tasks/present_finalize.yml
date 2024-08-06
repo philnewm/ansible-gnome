@@ -1,0 +1,28 @@
+---
+
+# finalize system settings and cleanup
+
+- name: Set default target to graphical
+  become: true
+  ansible.builtin.file:
+    src: /usr/lib/systemd/system/graphical.target
+    dest: /etc/systemd/system/default.target
+    state: link
+  notify: Reboot Host
+
+- name: Update GDM configuration file
+  ansible.builtin.lineinfile:
+    path: "{{ gdm_config_file[ansible_distribution] }}"
+    backrefs: true
+    regexp: '^#WaylandEnable=false$'
+    line: 'WaylandEnable=false\nDefaultSession=gnome-xorg.desktop'
+    state: present
+  become: true
+  notify: Reboot Host
+
+- name: Remove unused dependencies
+  become: true
+  ansible.builtin.package:
+    autoremove: true
+
+...

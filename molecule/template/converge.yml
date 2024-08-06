@@ -1,0 +1,26 @@
+---
+
+- name: Create and configure gnome desktop
+  hosts: client
+  vars:
+    # define default value inside role
+    system_local_lang: "en_US.UTF-8"
+
+  # TODO local testing only
+  # debugger: on_failed
+
+  pre_tasks:
+    # TODO move inside role
+    - name: Include dependencies
+      ansible.builtin.include_role:
+        name: gnome_setup
+        tasks_from: dependencies.yml
+
+  tasks:
+    - name: Include gnome role present
+      ansible.builtin.include_role:
+        name: gnome_setup
+      vars:
+        gnome_setup_state: present
+
+...

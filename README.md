@@ -1,6 +1,6 @@
 Gnome Setup
 =========
-[![Gnome test](https://github.com/philnewm/setup_automation/actions/workflows/gnome-role-tdd.yml/badge.svg)](https://github.com/philnewm/setup_automation/actions/workflows/gnome-role-tdd.yml)
+[![Gnome test](https://github.com/philnewm/ansible-gnome/actions/workflows/molecule-ci.yml/badge.svg)](https://github.com/philnewm/ansible-gnome/actions/workflows/molecule-ci.yml)
 
 This Roles builds a customized gnome desktop environment.
 It includes a bunch of [dconf](https://wiki.gnome.org/Projects/dconf) settings as well as extensions and themes beeing installed all in one go.

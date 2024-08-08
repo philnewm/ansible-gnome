@@ -3,13 +3,12 @@
 - name: Verify
   hosts: client
 
-  vars_files:
-    - ../../defaults/main/common.yml
-    - ../../defaults/main/extensions.yml
-    - ../../defaults/main/themes.yml
-    - ../../vars/main.yml
-
   tasks:
+    - name: Initialize role library
+      ansible.builtin.include_role:
+        name: ansible-gnome
+        tasks_from: init
+
     - name: Gather package facts
       ansible.builtin.package_facts:
 

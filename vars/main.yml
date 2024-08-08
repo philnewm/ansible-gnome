@@ -10,4 +10,6 @@ dependencies:
     - python3-psutil
     - git
 
+system_local_lang: "en_US.UTF-8"
+
 ...

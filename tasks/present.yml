@@ -5,6 +5,10 @@
 - name: Gather package facts
   ansible.builtin.package_facts:
 
+- name: Install dependencies
+  ansible.builtin.include_tasks:
+    file: dependencies.yml
+
 - name: Setup gnome base installation
   ansible.builtin.include_tasks:
     file: present_base_setup.yml

@@ -16,7 +16,8 @@
         state: up
       register: server
       no_log: false
-
+      vars:
+        command_timeout: 1300
     # NOTE(retr0h): Vagrant/VirtualBox sucks and parallelizing instance creation
     # causes issues.
 

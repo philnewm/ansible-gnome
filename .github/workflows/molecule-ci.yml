@@ -5,12 +5,12 @@ name: ci-testing
 
 on:
   push:
-
     branches: [ "main" ]
     paths-ignore:
       - 'README.md'
       - '**/*.md'
       - .gitignore
+      - ./meta/main.yml
 
   pull_request:
     branches: [ "main" ]

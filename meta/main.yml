@@ -1,4 +1,5 @@
 galaxy_info:
+  role_name: gnome
   author: philnewm
   description: Build custom gnome desktop
 

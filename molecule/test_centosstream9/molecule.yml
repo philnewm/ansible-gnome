@@ -16,7 +16,7 @@ platforms:
     box: centos/stream9
     # INFO version values from vagrant box site are not available on repo host site
     # box_version: "20230501.0"
-    box_url: https://cloud.centos.org/centos/9-stream/x86_64/images/CentOS-Stream-Vagrant-9-20230501.0.x86_64.vagrant-virtualbox.box
+    box_url: https://cloud.centos.org/centos/9-stream/x86_64/images/CentOS-Stream-Vagrant-9-20240729.0.x86_64.vagrant-virtualbox.box
     memory: 2048
     cpus: 2
     interfaces:

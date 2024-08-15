@@ -5,31 +5,31 @@
 - name: Gather package facts
   ansible.builtin.package_facts:
 
-- name: Install dependencies
+- name: Include dependencies
   ansible.builtin.include_tasks:
     file: dependencies.yml
 
-- name: Setup gnome base installation
+- name: Include gnome base installation
   ansible.builtin.include_tasks:
     file: present_base_setup.yml
 
-- name: Initialize gnome base config
+- name: Include gnome base config
   ansible.builtin.include_tasks:
     file: present_base_config.yml
 
-- name: Handle gnome extensions
+- name: Include gnome extensions
   ansible.builtin.include_tasks:
     file: present_extension_handling.yml
 
-- name: Handle gnome themes
+- name: Include gnome themes
   ansible.builtin.include_tasks:
     file: present_theme_handling.yml
 
-- name: Assign user profile picture
+- name: Include user profile picture
   ansible.builtin.include_tasks:
     file: present_profile_picture.yml
 
-- name: Finalize system for gnome desktop
+- name: Include system for gnome desktop
   ansible.builtin.include_tasks:
     file: present_finalize.yml
 

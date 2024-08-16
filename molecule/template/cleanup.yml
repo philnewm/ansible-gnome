@@ -7,8 +7,6 @@
     - name: Gather package facts
       ansible.builtin.package_facts:
 
-  tasks:
-    # TODO check if VM even exists
   roles:
     - role: ansible-gnome
       gnome_setup_state: absent

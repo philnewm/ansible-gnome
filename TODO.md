@@ -2,6 +2,7 @@
 
 ## Short Term
 
+* Create one runner job per distro
 * Implement wayland on/off switch
 * Enhance background images to only download a list of needed ones
 

@@ -1,6 +1,6 @@
 Gnome Setup
 =========
-[![Gnome test](https://github.com/philnewm/ansible-gnome/actions/workflows/molecule-ci.yml/badge.svg)](https://github.com/philnewm/ansible-gnome/actions/workflows/molecule-ci.yml)
+[![Alma9 CI](https://github.com/philnewm/ansible-gnome/actions/workflows/molecule-ci.yml/badge.svg)](https://github.com/philnewm/ansible-gnome/actions/workflows/alma9-ci.yml) [![Rocky9 CI](https://github.com/philnewm/ansible-gnome/actions/workflows/molecule-ci.yml/badge.svg)](https://github.com/philnewm/ansible-gnome/actions/workflows/rocky9-ci.yml) [![CentOS9 CI](https://github.com/philnewm/ansible-gnome/actions/workflows/molecule-ci.yml/badge.svg)](https://github.com/philnewm/ansible-gnome/actions/workflows/centos9-ci.yml) [![Debian12 CI](https://github.com/philnewm/ansible-gnome/actions/workflows/molecule-ci.yml/badge.svg)](https://github.com/philnewm/ansible-gnome/actions/workflows/debian12-ci.yml) [![Ubuntu22.04 CI](https://github.com/philnewm/ansible-gnome/actions/workflows/molecule-ci.yml/badge.svg)](https://github.com/philnewm/ansible-gnome/actions/workflows/ubuntu2204-ci.yml)
 
 This Roles builds a customized gnome desktop environment.
 It includes a bunch of [dconf](https://wiki.gnome.org/Projects/dconf) settings as well as extensions and themes beeing installed all in one go.

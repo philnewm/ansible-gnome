@@ -1,4 +1,4 @@
-# Gnome Setup TODOs
+# Ansible Gnome TODOs
 
 ## Short Term
 

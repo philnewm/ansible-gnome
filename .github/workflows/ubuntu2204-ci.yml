@@ -1,7 +1,6 @@
-# This workflow will install Python dependencies, run tests and lint with a single version of Python
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
+---
 
-name: ci-testing
+name: ubuntu2204-ci
 
 on:
   push:
@@ -24,7 +23,7 @@ permissions:
   contents: read
 
 jobs:
-  gnome:
+  ubuntu2204:
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 5
@@ -74,3 +73,5 @@ jobs:
     - name: Run molecule test
       run: |
         molecule test -s test_ubuntu2204   
+
+...

@@ -33,9 +33,6 @@
   ansible.builtin.include_tasks:
     file: present_finalize.yml
 
-- name: Flush handlers
-  meta: flush_handlers
-
 ...
 
 # INFO partly broken visible columns show no effect

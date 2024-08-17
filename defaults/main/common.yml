@@ -3,6 +3,7 @@
 # variables for basic gnome config
 
 user_install_dir: "{{ (ansible_env.HOME, 'install') | ansible.builtin.path_join }}"
+gnome_enable_reboot: true
 
 additional_rhel_repos:
   - name: rpmfusion-free

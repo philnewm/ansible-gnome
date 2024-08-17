@@ -4,6 +4,7 @@
 
 - name: Reboot Host
   become: true
+  when: gnome_enable_reboot
   ansible.builtin.reboot:
     msg: "Reboot initiated by Ansible"
 

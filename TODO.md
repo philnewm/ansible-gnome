@@ -3,7 +3,6 @@
 ## Short Term
 
 * Implement wayland on/off switch
-* Enhance background images to only download a list of needed ones
 
 ## Long Term
 

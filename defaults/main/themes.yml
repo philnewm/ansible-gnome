@@ -15,12 +15,6 @@ gnome_themes:
     name: "Qogir-cursors"
     dconf: 
       "/org/gnome/desktop/interface/cursor-theme": "'Qogir-ubuntu-cursors'"
-  wallpaper:
-    name: "Dynamic_Wallpapers"
-    dconf: 
-      "/org/gnome/desktop/background/picture-options": "'zoom'"
-      "/org/gnome/desktop/background/picture-uri": "'file:///usr/share/backgrounds/Dynamic_Wallpapers/BigSur.xml'"
-      "/org/gnome/desktop/background/picture-uri-dark": "'file:///usr/share/backgrounds/Dynamic_Wallpapers/BigSur.xml'"
 
 theme_repo:
   "Lavanda-Dark":
@@ -60,17 +54,19 @@ theme_repo:
     install_cmd: "./install.sh"
     download_dir: "Qogir-icon-theme/"
     install_dir: "Qogir-icon-theme/src/cursors/"
-  # TODO research a way to only download small list of wallapapers (Interactive_Install.sh in repo)
-  "Dynamic_Wallpapers":
-    repo_url: "https://github.com/saint-13/Linux_Dynamic_Wallpapers.git"
-    branch:
-      "40": "main"
-      "42": "main"
-      "43": "main"
-    installer: "install.sh"
-    install_cmd: "./install.sh"
-    download_dir: "Linux_dynamic_Wallpapers/"
-    install_dir: "Linux_dynamic_Wallpapers/"
+
+backgrounds_dir: "/usr/share/backgrounds/Dynamic_Wallpapers"
+
+# TODO RnD an abstract approach to this
+custom_commands:
+  - "curl -s \"https://raw.githubusercontent.com/philnewm/Linux_Dynamic_Wallpapers/scriptable-install/Interactive_Install.sh\" | sudo bash -s \"BigSur\" \"Catalina\" \"MagicLake\" \"Mojave\" \"Elementary-OS-Odin\""
+
+wallpaper:
+  name: "Dynamic_Wallpapers"
+  dconf: 
+    "/org/gnome/desktop/background/picture-options": "'zoom'"
+    "/org/gnome/desktop/background/picture-uri": "'file:///usr/share/backgrounds/Dynamic_Wallpapers/BigSur.xml'"
+    "/org/gnome/desktop/background/picture-uri-dark": "'file:///usr/share/backgrounds/Dynamic_Wallpapers/BigSur.xml'"
 
 theme_paths:
   - "{{ ansible_env.HOME }}/.themes/"

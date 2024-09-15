@@ -17,7 +17,7 @@ platforms:
     # INFO version values from vagrant box site are not available on repo host site
     # box_version: "20230501.0"
     box_url: https://cloud.centos.org/centos/9-stream/x86_64/images/CentOS-Stream-Vagrant-9-20240729.0.x86_64.vagrant-virtualbox.box
-    memory: 2048
+    memory: 4096
     cpus: 2
     interfaces:
       - auto_config: true
@@ -30,6 +30,7 @@ platforms:
       - "customize ['modifyvm', :id, '--vram', '256']"
       - "customize ['modifyvm', :id, '--accelerate-3d', 'off']"
       - "customize ['modifyvm', :id, '--accelerate-2d-video', 'on']"
+      - "customize ['modifyvm', :id, '--clipboard-mode', 'bidirectional']"
     groups:
       - client
 provisioner:

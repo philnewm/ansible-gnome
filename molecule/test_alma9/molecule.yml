@@ -15,7 +15,7 @@ platforms:
   - name: Alma9
     box: almalinux/9
     box_version: "9.4.20240509"
-    memory: 2048
+    memory: 4096
     cpus: 2
     interfaces:
       - auto_config: true
@@ -28,6 +28,7 @@ platforms:
       - "customize ['modifyvm', :id, '--vram', '256']"
       - "customize ['modifyvm', :id, '--accelerate-3d', 'off']"
       - "customize ['modifyvm', :id, '--accelerate-2d-video', 'on']"
+      - "customize ['modifyvm', :id, '--clipboard-mode', 'bidirectional']"
     groups:
       - client
 provisioner:

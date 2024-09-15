@@ -50,8 +50,8 @@ Structure
  ┃ ┣ 📜 present_requirements.yml
  ┃ ┣ 📜 present_theme_handling.yml
  ┃ ┗ 📜 present_themes.yml
- ┣ 📂 templates
- ┃ ┣ 📜 README_template.j2
+ ┣ 📂 defaults
+ ┃ ┣ 📜 README_default.j2
  ┃ ┣ 📜 gnome_profile.j2
  ┃ ┣ 📜 message.txt
  ┃ ┗ 📜 results.html

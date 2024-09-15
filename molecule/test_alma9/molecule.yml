@@ -37,12 +37,12 @@ provisioner:
     # ANSIBLE_VERBOSITY: 3
     ANSIBLE_DIFF_ALWAYS: false
   playbooks:
-    create: ../template/create.yml
-    prepare: ../template/prepare.yml
-    converge: ../template/converge.yml
-    side_effect: ../template/side_effect.yml
-    verify: ../template/verify.yml
-    cleanup: ../template/cleanup.yml        
+    create: ../default/create.yml
+    prepare: ../default/prepare.yml
+    converge: ../default/converge.yml
+    side_effect: ../default/side_effect.yml
+    verify: ../default/verify.yml
+    cleanup: ../default/cleanup.yml        
   config_options:
     defaults:
       diff: True

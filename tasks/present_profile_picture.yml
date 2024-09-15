@@ -34,7 +34,7 @@
   loop: "{{ shell_users }}"
   loop_control:
     loop_var: shell_user
-  ansible.builtin.default:
+  ansible.builtin.template:
     src: gnome_profile.j2
     dest: "{{ profile_config_path }}/{{ shell_user }}"
     owner: root

@@ -28,6 +28,12 @@
   changed_when: false
   register: background
 
+- name: Run custom command
+  loop: "{{ custom_commands }}"
+  when: not background.stat.exists
+  ansible.builtin.shell:
+    cmd: "{{ item }}"
+
 - name: Configure wallpaper
   loop: "{{ wallpaper.dconf | dict2items }}"
   ansible.builtin.dconf:

@@ -20,7 +20,7 @@
 - name: Create system default resolution path
   become: true
   ansible.builtin.file:
-    path: "{{ gdm_monitor_config_sys_path }}"
+    path: "{{ gdm_monitor_config_sys_path[ansible_os_family] }}"
     state: directory
     mode: "0700"
 
@@ -30,8 +30,8 @@
     src: monitors.xml.j2
     dest: "{{ gdm_monitor_config_sys_path[ansible_os_family] }}/monitors.xml"
     mode: "0644"
-    owner: gdm
-    group: gdm
+    owner: "{{ gdm_user_name[ansible_distribution] }}"
+    group: "{{ gdm_user_name[ansible_distribution] }}"
 
 - name: Create user default resolution path
   ansible.builtin.file:
@@ -39,7 +39,7 @@
     state: directory
     mode: "0700"
 
-- name: Set system default resolution
+- name: Set user default resolution
   become: true
   ansible.builtin.template:
     src: monitors.xml.j2

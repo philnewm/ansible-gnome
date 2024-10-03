@@ -57,6 +57,12 @@ gdm_default_refresh_rate: 59.81
 gdm_vbox_display_name:
   "RedHat": "Virtual-1"
   "Debian": "Virtual1"
+gdm_user_name:
+  "CentOS": "gdm"
+  "AlmaLinux": "gdm"
+  "Rocky": "gdm"
+  "Ubuntu": "gdm"
+  "Debian": "Debian-gdm"
 gdm_monitor_config_sys_path: 
   "RedHat": "/var/lib/gdm/.config"
   "Debian": "/var/lib/gdm3/.config"

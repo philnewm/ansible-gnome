@@ -23,6 +23,8 @@
     path: "{{ gdm_monitor_config_sys_path[ansible_os_family] }}"
     state: directory
     mode: "0700"
+    owner: "{{ gdm_user_name[ansible_distribution] }}"
+    group: "{{ gdm_user_name[ansible_distribution] }}"
 
 - name: Set system default resolution
   become: true
@@ -40,7 +42,6 @@
     mode: "0700"
 
 - name: Set user default resolution
-  become: true
   ansible.builtin.template:
     src: monitors.xml.j2
     dest: "{{ gdm_monitor_config_user_path }}/monitors.xml"

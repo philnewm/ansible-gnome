@@ -23,6 +23,7 @@
       when: git_result.changed
 
     - name: Install git extension dependencies
+      become: true
       when: git_theme.dependencies is defined
       loop: "{{ git_theme.dependencies[ansible_os_family] }}"
       loop_control:
@@ -30,15 +31,14 @@
       ansible.builtin.package:
         name: "{{ dependency }}"
         state: present
-      become: true
 
     - name: "Install extension from github"
+      when: git_result.changed
       ansible.builtin.command: "{{ git_theme.install_cmd }}"
       args:
         chdir: "{{ user_install_dir }}/{{git_theme.install_dir}}"
       register: install_result
       changed_when: install_result.rc == 0
-      when: git_result.changed
 
     - name: Remove downloaded repos
       ansible.builtin.file:

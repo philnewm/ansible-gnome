@@ -247,6 +247,58 @@
         fail_msg: "Expected value '{{ theme_dconf[entry.item.key] }}' but got '{{ entry.value }}' instead for key '{{ entry.item.key }}'."
         quiet: true
 
+    - name: Read display server resolution_x
+      become: true
+      community.general.xml:
+        path: "{{ gdm_monitor_config_sys_path[ansible_os_family] }}/monitors.xml"
+        xpath: '/monitors/configuration/logicalmonitor/monitor/mode/width'
+        content: text
+      register: width_value
+
+    - name: Read display server resolution_y
+      become: true
+      community.general.xml:
+        path: "{{ gdm_monitor_config_sys_path[ansible_os_family] }}/monitors.xml"
+        xpath: '/monitors/configuration/logicalmonitor/monitor/mode/height'
+        content: text
+      register: height_value
+
+    - name: Verify expected display server resolution
+      ansible.builtin.assert:
+        that:
+          - width_value.matches[0].width | int == gdm_default_resolution_x
+          - height_value.matches[0].height | int == gdm_default_resolution_y
+        fail_msg: >
+          "A display server resolution of {{ gdm_default_resolution_x }}
+          x{{ gdm_default_resolution_y }} was expected, got
+           {{ width_value.matches[0].width }}x{{ height_value.matches[0].height }}
+           instead"
+
+    - name: Read user session resolution_x
+      community.general.xml:
+        path: "{{ gdm_monitor_config_user_path }}/monitors.xml"
+        xpath: '/monitors/configuration/logicalmonitor/monitor/mode/width'
+        content: text
+      register: user_width_value
+
+    - name: Read user session resolution_y
+      community.general.xml:
+        path: "{{ gdm_monitor_config_user_path }}/monitors.xml"
+        xpath: '/monitors/configuration/logicalmonitor/monitor/mode/height'
+        content: text
+      register: user_height_value
+
+    - name: Verify expected user session resolution
+      ansible.builtin.assert:
+        that:
+          - user_width_value.matches[0].width | int == gdm_default_resolution_x
+          - user_height_value.matches[0].height | int == gdm_default_resolution_y
+        fail_msg: >
+          "A user session resolution of {{ gdm_default_resolution_x }}x
+          {{ gdm_default_resolution_y }} was expected, got
+           {{ user_width_value.matches[0] }}x{{ user_height_value.matches[0] }}
+           instead"
+
     - name: Get users list
       ansible.builtin.getent:
         database: passwd
@@ -285,9 +337,3 @@
           {{ profile.shell_user }}' is not present in
           {{ profile_config_path }}/{{ profile.shell_user }}"
         quiet: true
-
-    # - name: Roll back gnome changes
-    #   ansible.builtin.include_role:
-    #     name: gnome_setup
-    #   vars:
-    #     gnome_setup_state: absent

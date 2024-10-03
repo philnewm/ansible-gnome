@@ -43,12 +43,24 @@ obsolete_packages:
     - gnome-shell-extension-background-logo
     - gnome-software-plugin-snap
     - gnome-startup-applications
+    - byobu
   "RedHat":
     - *osbolete_pkgs_default
     - gnome-remote-desktop
   "Debian":
     # INFO gnome-remote-desktop is a part of gnome-control-center package
     - *osbolete_pkgs_default
+
+gdm_default_resolution_x: 1280
+gdm_default_resolution_y: 800
+gdm_default_refresh_rate: 59.81
+gdm_vbox_display_name:
+  "RedHat": "Virtual-1"
+  "Debian": "Virtual1"
+gdm_monitor_config_sys_path: 
+  "RedHat": "/var/lib/gdm/.config"
+  "Debian": "/var/lib/gdm3/.config"
+gdm_monitor_config_user_path: "{{ ansible_env.HOME }}/.config"
 
 gdm_config_file:
   "CentOS": "/etc/gdm/custom.conf"
@@ -63,9 +75,9 @@ gnome_base_settings:
     # "/org/gnome/desktop/interface/gtk-theme": "'Adwaita-dark'"
     "/system/locale/region": "'en_GB.UTF-8'"
     "/org/gnome/desktop/interface/enable-hot-corners": "false"
-    "/org/gnome/desktop/input-sources/sources": "[('xkb', 'de'), ('xkb', 'us')]"
+    "/org/gnome/desktop/input-sources/sources": "[('xkb', 'us+euro'), ('xkb', 'de')]"
     "/org/gnome/desktop/input-sources/sources/per-window": "false"
-    "/org/gnome/desktop/input-sources/mru-sources": "[['xkb', 'de'], ['xkb', 'us']]"
+    "/org/gnome/desktop/input-sources/mru-sources": "[['xkb', 'us+euro'], ['xkb', 'de']]"
     "/org/gnome/desktop/input-sources/xkb-options": "['caps:none']"
     "/org/gnome/desktop/wm/keybindings/activate-window-menu": "@as []"
     "/org/gnome/desktop/wm/preferences/action-middle-click-titlebar": "'minimize'"

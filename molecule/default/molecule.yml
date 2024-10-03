@@ -24,7 +24,7 @@ platforms:
       - auto_config: true
         network_name: private_network
         type: "static"
-        ip: "192.168.56.20"
+        ip: "192.168.56.10"
     # TODO create one base configuration + only host specififc values (ip) should be defined per host
     provider_raw_config_args:
       - "customize ['modifyvm', :id, '--uartmode1', 'disconnected']"
@@ -43,7 +43,7 @@ platforms:
       - auto_config: true
         network_name: private_network
         type: "static"
-        ip: "192.168.56.40"
+        ip: "192.168.56.30"
     provider_raw_config_args:
       - "customize ['modifyvm', :id, '--uartmode1', 'disconnected']"
       - "customize ['modifyvm', :id, '--graphicscontroller', 'vmsvga']"

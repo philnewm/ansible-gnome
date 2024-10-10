@@ -1,6 +1,6 @@
 ---
 
-# apply gnome base configuration to dconf
+# Apply gnome base configuration to dconf
 
 - name: Configure basic gnome-settings
   community.general.dconf:

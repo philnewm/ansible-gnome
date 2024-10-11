@@ -1,4 +1,5 @@
 ---
+
 - name: Create
   hosts: localhost
   connection: local
@@ -60,3 +61,5 @@
             content: "{{ instance_conf | to_json | from_json | to_yaml }}"
             dest: "{{ molecule_instance_config }}"
             mode: "0600"
+
+...

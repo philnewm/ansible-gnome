@@ -1,10 +1,10 @@
 ---
+
 dependency:
   name: galaxy
 driver:
   name: vagrant
   parallel: true
-  snapshot: initial
   provider:
     name: virtualbox
     type: virtualbox
@@ -12,20 +12,19 @@ lint: |
   set -e
   yamllint
   ansible-lint
-# Warning redownloading and updating base images can cause setup to break caused by download mirror troubles
-# TODO boot VMs from local updated images - use packer
-# INFO change to updated local network images might also improve speed 
 platforms:
   - name: Alma9
     box: almalinux/9
     memory: 4096
     cpus: 2
+    provider_options:
+      gui: true
+    linked_clone: true
     interfaces:
       - auto_config: true
         network_name: private_network
         type: "static"
         ip: "192.168.56.10"
-    # TODO create one base configuration + only host specififc values (ip) should be defined per host
     provider_raw_config_args:
       - "customize ['modifyvm', :id, '--uartmode1', 'disconnected']"
       - "customize ['modifyvm', :id, '--graphicscontroller', 'vmsvga']"
@@ -33,17 +32,21 @@ platforms:
       - "customize ['modifyvm', :id, '--accelerate-3d', 'off']"
       - "customize ['modifyvm', :id, '--accelerate-2d-video', 'on']"
       - "customize ['modifyvm', :id, '--clipboard-mode', 'bidirectional']"
+      - "customize ['modifyvm', :id, '--draganddrop', 'bidirectional']"
     groups:
       - client
   - name: Ubuntu2210
     box: ubuntu/jammy64
     memory: 4096
     cpus: 2
+    provider_options:
+      gui: true
+    linked_clone: true
     interfaces:
       - auto_config: true
         network_name: private_network
         type: "static"
-        ip: "192.168.56.30"
+        ip: "192.168.56.20"
     provider_raw_config_args:
       - "customize ['modifyvm', :id, '--uartmode1', 'disconnected']"
       - "customize ['modifyvm', :id, '--graphicscontroller', 'vmsvga']"
@@ -51,6 +54,7 @@ platforms:
       - "customize ['modifyvm', :id, '--accelerate-3d', 'off']"
       - "customize ['modifyvm', :id, '--accelerate-2d-video', 'on']"
       - "customize ['modifyvm', :id, '--clipboard-mode', 'bidirectional']"
+      - "customize ['modifyvm', :id, '--draganddrop', 'bidirectional']"
     groups:
       - client
 provisioner:
@@ -90,3 +94,5 @@ scenario:
       - verify
       - cleanup
       - destroy
+
+...

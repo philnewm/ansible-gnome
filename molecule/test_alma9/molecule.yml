@@ -1,9 +1,9 @@
 ---
+
 dependency:
   name: galaxy
 driver:
   name: vagrant
-  parallel: true
   provider:
     name: virtualbox
     type: virtualbox
@@ -27,8 +27,6 @@ platforms:
       - "customize ['modifyvm', :id, '--graphicscontroller', 'vmsvga']"
       - "customize ['modifyvm', :id, '--vram', '256']"
       - "customize ['modifyvm', :id, '--accelerate-3d', 'off']"
-      - "customize ['modifyvm', :id, '--accelerate-2d-video', 'on']"
-      - "customize ['modifyvm', :id, '--clipboard-mode', 'bidirectional']"
     groups:
       - client
 provisioner:
@@ -70,3 +68,5 @@ scenario:
     - verify
     - cleanup
     - destroy
+
+...

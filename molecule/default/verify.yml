@@ -337,3 +337,5 @@
           {{ profile.shell_user }}' is not present in
           {{ profile_config_path }}/{{ profile.shell_user }}"
         quiet: true
+
+...

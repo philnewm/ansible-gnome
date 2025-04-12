@@ -3,8 +3,8 @@
 # tasks file for gnome_setup
 
 
-- name: "Desired state is {{ gnome_setup_state }}"
+- name: "Desired state is {{ state }}"
   ansible.builtin.include_tasks:
-    file: "{{ gnome_setup_state }}.yml"
+    file: "{{ state }}.yml"
 
 ...

@@ -1,6 +1,6 @@
 # Gnome Setup
 
-[![Alma9 CI](https://github.com/philnewm/ansible-gnome/actions/workflows/alma9-ci.yml/badge.svg)](https://github.com/philnewm/ansible-gnome/actions/workflows/alma9-ci.yml) [![Rocky9 CI](https://github.com/philnewm/ansible-gnome/actions/workflows/rocky9-ci.yml/badge.svg)](https://github.com/philnewm/ansible-gnome/actions/workflows/rocky9-ci.yml) [![CentOS9 CI](https://github.com/philnewm/ansible-gnome/actions/workflows/centos9-ci.yml/badge.svg)](https://github.com/philnewm/ansible-gnome/actions/workflows/centos9-ci.yml) [![Debian12 CI](https://github.com/philnewm/ansible-gnome/actions/workflows/debian12-ci.yml/badge.svg)](https://github.com/philnewm/ansible-gnome/actions/workflows/debian12-ci.yml) [![Ubuntu22.04 CI](https://github.com/philnewm/ansible-gnome/actions/workflows/ubuntu2204-ci.yml/badge.svg)](https://github.com/philnewm/ansible-gnome/actions/workflows/ubuntu2204-ci.yml)
+[![Alma9 CI](https://github.com/philnewm/ansible-gnome/actions/workflows/alma9-ci-caller.yml/badge.svg)](https://github.com/philnewm/ansible-gnome/actions/workflows/alma9-ci-caller.yml) [![Rocky9 CI](https://github.com/philnewm/ansible-gnome/actions/workflows/rocky9-ci-caller.yml/badge.svg)](https://github.com/philnewm/ansible-gnome/actions/workflows/rocky9-ci-caller.yml) [![CentOS9 CI](https://github.com/philnewm/ansible-gnome/actions/workflows/centos9-ci-caller.yml/badge.svg)](https://github.com/philnewm/ansible-gnome/actions/workflows/centos9-ci-caller.yml) [![Debian12 CI](https://github.com/philnewm/ansible-gnome/actions/workflows/debian12-ci-caller.yml/badge.svg)](https://github.com/philnewm/ansible-gnome/actions/workflows/debian12-ci-caller.yml) [![Ubuntu22.04 CI](https://github.com/philnewm/ansible-gnome/actions/workflows/ubuntu2204-ci-caller.yml/badge.svg)](https://github.com/philnewm/ansible-gnome/actions/workflows/ubuntu2204-ci-caller.yml)
 
 This Roles builds a customized gnome desktop environment.
 It includes a bunch of [dconf](https://wiki.gnome.org/Projects/dconf) settings as well as extensions and themes beeing installed all in one go.
@@ -20,7 +20,7 @@ Extensions (not available on every distro):
 Themes:
 
 * shell_theme: [Lavanda-Dark](https://github.com/vinceliuice/Lavanda-gtk-theme)
-* icon_theme: [Tela-circle-purple-dark](https://github.com/vinceliuice/Tela-circle-icon-theme)
+* icon_theme: [Tela-ci-callerrcle-purple-dark](https://github.com/vinceliuice/Tela-ci-callerrcle-icon-theme)
 * cursor_theme: [Qogir-cursors](https://github.com/vinceliuice/Qogir-icon-theme)
 * wallpaper: [Dynamic_Wallpapers](https://github.com/saint-13/Linux_Dynamic_Wallpapers)
 
@@ -95,20 +95,20 @@ The following packages are required but will also be installed by the role autom
   * gdm_config_file: Path to gdm configuration file per distribution
   * gnome_base_settings: Gnome dconf settings to change per gnome major version number
 * defaults/main/extensions.yml
-  * gnome_extensions: list of extensions including their os family specific names and including dconf settings if required
+  * gnome_extensions: list of extensions including their os family speci-callerfic names and including dconf settings if required
   * git_ext: List of extensions to be installed from custom sources using git and their respective git realted information
   * extension_paths: directories gnome extensions should be installed in
   * obsolete_gnome_extensions: List of extensions to remove from default gnome-shell install
 * defaults/main/themes.yml
   * gnome_themes: Dictionary of theme types having the names as their values and dconf dictionary
-  * theme_repo: Dictionary of theme names including their git specific information
+  * theme_repo: Dictionary of theme names including their git speci-callerfic information
   * theme_paths: directories gnome themes should be installed in
   * picture_dest_path: profile picture destination path
   * profile_config_path: Gnome user profile config path
   * profile_picture: User names mapped to their profile pictures paths
   * valid_shells: Shell names to grab valid shell user names from
 
-## Dependencies
+## Dependenci-calleres
 
 This role doesn't depend on any additional ansible-galaxy roles
 
@@ -125,17 +125,17 @@ Including an example of how to use your role (for instance, with variables passe
     system_local_lang: "en_US.UTF-8"
 
   pre_tasks:
-    - name: Include dependencies
+    - name: Include dependenci-calleres
       ansible.builtin.include_role:
         name: gnome_setup
-        tasks_from: dependencies.yml
+        tasks_from: dependenci-calleres.yml
 
   tasks:
     - name: Include gnome role present
       ansible.builtin.include_role:
         name: gnome_setup
       vars:
-        gnome_setup_state: present
+        state: present
 
 ...
 ```

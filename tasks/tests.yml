@@ -56,6 +56,12 @@
     fail_msg: "Obsolete Gnome package {{ item }} is still rpesent"
     quiet: true
 
+- name: Verify that the /home entry contains the required options
+  ansible.builtin.command: "grep -E '^/dev/mapper/almalinux-home' /etc/fstab"
+  register: fstab_check
+  failed_when: "'x-gvfs-show' not in fstab_check.stdout or 'x-gvfs-name=Home' not in fstab_check.stdout"
+  changed_when: false
+
 - name: Get current target
   ansible.builtin.stat:
     path: /etc/systemd/system/default.target

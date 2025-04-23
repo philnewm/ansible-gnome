@@ -18,8 +18,12 @@ gnome_packages:
     - gnome-shell
     - gnome-themes-extra # includes Adwaita-dark
     - gnome-terminal
+    - gnome-calendar
     - gnome-system-monitor
     - gnome-software
+    - gedit
+    - nautilus
+    - gnome-calculator
     - gnome-tweaks
     - gnome-user-docs
     - gnome-photos

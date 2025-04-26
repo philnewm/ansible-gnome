@@ -60,7 +60,7 @@ theme_repo:
     install_cmd: "./install.sh"
     download_dir: "Qogir-icon-theme/"
     install_dir: "Qogir-icon-theme/src/cursors/"
-  # TODO research a way to only download small list of wallapapers (Interactive_Install.sh in repo)
+  # TODO research a way to only download small list of wallpapers (Interactive_Install.sh in repo)
   "Dynamic_Wallpapers":
     repo_url: "https://github.com/saint-13/Linux_Dynamic_Wallpapers.git"
     branch:

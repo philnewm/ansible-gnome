@@ -17,10 +17,10 @@
       delay: 10
 
     - name: Update installer permissions
+      when: git_result.changed
       ansible.builtin.file:
         path: "{{ (user_install_dir, git_theme.install_dir, git_theme.installer) | ansible.builtin.path_join }}"
         mode: "0755"
-      when: git_result.changed
 
     - name: Install git extension dependencies
       become: true
@@ -33,6 +33,7 @@
         state: present
 
     - name: "Install extension from github"
+      become: true  # INFO might work without this due to password less sudo -> not the best idea if running as desktop user (no issue in testing due to vagrant having passwordless sudo active) Was required for wallpaper install since it accesses /usr/
       when: git_result.changed
       ansible.builtin.command: "{{ git_theme.install_cmd }}"
       args:

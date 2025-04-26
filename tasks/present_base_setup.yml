@@ -17,12 +17,24 @@
     name: "{{ item }}"
     state: absent
 
-- name: Modify /etc/fstab to display /home usage in baobab overview
+- name: Check if /dev/mapper/almalinux-home exists
+  ansible.builtin.stat:
+    path: /dev/mapper/almalinux-home
+  register: home_mapper
+
+- name: Get filesystem type of /home
+  when: home_mapper.stat.exists
+  ansible.builtin.command: "findmnt -n -o FSTYPE /home"
+  register: home_fs_type
+  changed_when: false
+
+- name: Modify /etc/fstab dynamically
   become: true
+  when: home_mapper.stat.exists
   ansible.builtin.lineinfile:
     path: /etc/fstab
     regexp: '^/dev/mapper/almalinux-home'
-    line: '/dev/mapper/almalinux-home /home xfs defaults,x-gvfs-show,x-gvfs-name=Home 0 0'
+    line: "/dev/mapper/almalinux-home /home {{ home_fs_type.stdout }} defaults,x-gvfs-show,x-gvfs-name=Home 0 0"
     state: present
 
 - name: Create system default resolution path

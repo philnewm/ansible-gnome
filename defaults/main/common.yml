@@ -22,6 +22,7 @@ gnome_packages:
     - gnome-system-monitor
     - gnome-software
     - gedit
+    - eog
     - nautilus
     - gnome-calculator
     - gnome-tweaks

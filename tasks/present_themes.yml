@@ -33,7 +33,7 @@
         state: present
 
     - name: "Install extension from github"
-      become: true  # INFO might work without this due to password less sudo -> not the best idea if running as desktop user (no issue in testing due to vagrant having passwordless sudo active) Was required for wallpaper install since it accesses /usr/
+      # become: true  # INFO might work without this due to password less sudo -> not the best idea if running as desktop user (no issue in testing due to vagrant having passwordless sudo active) Was required for wallpaper install since it accesses /usr/
       when: git_result.changed
       ansible.builtin.command: "{{ git_theme.install_cmd }}"
       args:

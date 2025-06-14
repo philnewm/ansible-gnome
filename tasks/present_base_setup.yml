@@ -1,7 +1,5 @@
 ---
 
-# gnome base setup
-
 - name: Install Gnome packages
   when: item not in ansible_facts.packages
   loop: "{{ gnome_packages[ansible_os_family] | flatten(1) }}"

@@ -1,4 +1,5 @@
 ---
+
 - name: Save dconf path
   when: extension.dconf_path is defined
   ansible.builtin.set_fact:
@@ -30,10 +31,10 @@
       delay: 10
 
     - name: Update installer permissions
+      when: git_result.changed
       ansible.builtin.file:
         path: "{{ (user_install_dir, git_extension.install_dir, git_extension.installer) | ansible.builtin.path_join }}"
         mode: "0755"
-      when: git_result.changed
 
     - name: Install git extension dependencies
       become: true
@@ -46,12 +47,12 @@
         state: present
 
     - name: "Install extension from github"
+      when: git_result.changed
       ansible.builtin.shell: "{{ git_extension.install_cmd }}"
       args:
         chdir: "{{ user_install_dir }}/{{ git_extension.install_dir }}"
       register: install_result
       changed_when: install_result.rc == 0
-      when: git_result.changed
       failed_when: install_result.rc not in [0, 2]  # INFO make install errors for clipboard-indicator even tho it works
 
     - name: Remove downloaded repos

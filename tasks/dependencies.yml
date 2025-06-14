@@ -4,7 +4,7 @@
 - name: Gather package facts
   ansible.builtin.package_facts:
 
-- name: Upgrade packages
+- name: Update package cache
   become: true
   when: ansible_os_family == "Debian"
   ansible.builtin.apt:
@@ -90,12 +90,12 @@
   changed_when: false
 
 - name: Install global dependencies
+  become: true
   loop: "{{ dependencies[ansible_os_family] }}"
   when: item not in ansible_facts.packages
   ansible.builtin.package:
     name: "{{ item }}"
     state: present
-  become: true
 
 - name: Get current system locale
   ansible.builtin.shell:

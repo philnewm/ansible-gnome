@@ -16,6 +16,7 @@
         cmd: |
           set -o pipefail
           dnf repolist --enabled | awk '{print $1}'
+      args:
         executable: /bin/bash
       register: enabled_repos
       changed_when: false
@@ -100,6 +101,7 @@
     cmd: |
       set -o pipefail
       gnome-shell --version | awk '{print $3}' | cut -d'.' -f1
+  args:
     executable: /bin/bash
   register: gnome_major_version
   changed_when: false
@@ -129,6 +131,7 @@
     cmd: |
       set -o pipefail
       ls -1d {{ extension_paths | join('* ') }}* | xargs -n1 basename | cat
+  args:
     executable: /bin/bash
   register: gnome_extensions_list
   changed_when: false
@@ -215,6 +218,7 @@
     cmd: |
       set -o pipefail
       ls -1d {{ theme_paths | join('* ') }}* | xargs -n1 basename | cat
+  args:
     executable: /bin/bash
   register: gnome_themes_list
   changed_when: false

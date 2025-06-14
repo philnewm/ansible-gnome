@@ -102,6 +102,7 @@
     cmd: |
       set -o pipefail
       localectl status | awk '/LANG/{print $3}' | cut -d'=' -f2
+  args:
     executable: /bin/bash
   register: current_locale
   changed_when: false

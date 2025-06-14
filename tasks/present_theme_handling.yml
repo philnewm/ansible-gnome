@@ -5,6 +5,7 @@
     cmd: |
       set -o pipefail
       ls -1d {{ theme_paths | join('* ') }}* | xargs -n1 basename | cat
+  args:
     executable: /bin/bash
   register: theme_names_list
   changed_when: false

@@ -74,6 +74,8 @@
     cmd: |
       set -o pipefail
       gnome-shell --version | awk '{print $3}' | cut -d'.' -f1
+  args:
+    executable: /bin/bash
   register: gnome_major_version
   changed_when: false
 

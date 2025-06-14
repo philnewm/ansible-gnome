@@ -1,8 +1,8 @@
 ---
 
-# install and configure gnome themes
-
 - name: "Get theme from Github: {{ theme.value.name }}"
+  vars:
+    git_theme: "{{ theme_repo[theme.value.name] }}"
   block:
     - name: "Clone theme from github: {{ theme.value.name }}"
       ansible.builtin.git:
@@ -37,7 +37,7 @@
       when: git_result.changed
       ansible.builtin.command: "{{ git_theme.install_cmd }}"
       args:
-        chdir: "{{ user_install_dir }}/{{git_theme.install_dir}}"
+        chdir: "{{ user_install_dir }}/{{ git_theme.install_dir }}"
       register: install_result
       changed_when: install_result.rc == 0
 
@@ -55,5 +55,4 @@
         key: "{{ dconf_entry.key }}"
         value: "{{ dconf_entry.value | string }}"
 
-  vars:
-    git_theme: "{{ theme_repo[theme.value.name] }}"
+...

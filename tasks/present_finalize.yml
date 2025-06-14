@@ -1,7 +1,5 @@
 ---
 
-# finalize system settings and cleanup
-
 - name: Set default target to graphical
   become: true
   ansible.builtin.file:

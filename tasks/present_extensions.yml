@@ -13,8 +13,10 @@
 
 - name: "Get extension from Github: {{ extension.name }}"
   when: extension[ansible_os_family].package == "git"
+  vars:
+    git_extension: "{{ git_ext[extension.name] }}"
   block:
-    # TODO test installing in destination path "{{ ansible_env.HOME }}/.local/share/gnome-shell/extensions/" right away 
+    # TODO test installing in destination path "{{ ansible_env.HOME }}/.local/share/gnome-shell/extensions/" right away
     - name: "Clone extension from github: {{ extension.name }}"
       ansible.builtin.git:
         repo: "{{ git_extension.repo_url }}"
@@ -46,7 +48,7 @@
     - name: "Install extension from github"
       ansible.builtin.shell: "{{ git_extension.install_cmd }}"
       args:
-        chdir: "{{ user_install_dir }}/{{git_extension.install_dir}}"
+        chdir: "{{ user_install_dir }}/{{ git_extension.install_dir }}"
       register: install_result
       changed_when: install_result.rc == 0
       when: git_result.changed
@@ -56,8 +58,6 @@
       ansible.builtin.file:
         path: "{{ user_install_dir }}"
         state: absent
-  vars:
-    git_extension: "{{ git_ext[extension.name] }}"
 
 - name: Configure extension
   when: extension.dconf_settings is defined

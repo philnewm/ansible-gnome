@@ -1,7 +1,5 @@
 ---
 
-# Apply gnome base configuration to dconf
-
 - name: Configure basic gnome-settings
   community.general.dconf:
     key: "{{ item.key }}"

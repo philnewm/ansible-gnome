@@ -8,9 +8,7 @@
   become: true
   when: ansible_os_family == "Debian"
   ansible.builtin.apt:
-    name: "*"
-    state: latest
-    autoclean: yes
+    autoclean: true
     update_cache: true
     cache_valid_time: 3600
 
@@ -88,7 +86,7 @@
   become: true
   when: ansible_distribution == "Fedora"
   ansible.builtin.command:
-    cmd: flatpak remote-modify --no-filter flathub 
+    cmd: flatpak remote-modify --no-filter flathub
   changed_when: false
 
 - name: Install global dependencies
@@ -101,10 +99,11 @@
 
 - name: Get current system locale
   ansible.builtin.shell:
-    cmd: "localectl status | awk '/LANG/{print $3}' | cut -d'=' -f2"
+    cmd: |
+      set -o pipefail
+      "localectl status | awk '/LANG/{print $3}' | cut -d'=' -f2"
   register: current_locale
   changed_when: false
-  check_mode: no
 
 # INFO alma9 box missing default locals -> extension system-monitor fails to activate if locals are missing
 - name: "Set system locale to {{ system_local_lang }}"

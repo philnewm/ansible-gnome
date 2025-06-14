@@ -46,6 +46,6 @@
     var: ext_names_list
 
 - name: Enable installed extensions
-  ansible.builtin.dconf:
+  community.general.dconf:
     key: "/org/gnome/shell/enabled-extensions"
     value: "{{ ext_names_list.stdout_lines | to_json }}"

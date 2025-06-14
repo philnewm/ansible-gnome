@@ -1,7 +1,5 @@
 ---
 
-# handle gnome themes
-
 - name: Get installed GNOME themes
   ansible.builtin.shell:
     cmd: |

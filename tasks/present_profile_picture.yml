@@ -1,7 +1,5 @@
 ---
 
-# Assing profile picture
-
 - name: Get users list
   ansible.builtin.getent:
     database: passwd

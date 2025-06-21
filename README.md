@@ -10,7 +10,6 @@ Extensions (not available on every distro):
 * [user-theme](https://extensions.gnome.org/extension/19/user-themes/)
 * [appindicator](https://extensions.gnome.org/extension/615/appindicator-support/)
 * [sound-output-device-chooser](https://extensions.gnome.org/extension/906/sound-output-device-chooser/)
-* [no-overview](https://extensions.gnome.org/extension/4099/no-overview/)
 * [tiling-assistant](https://extensions.gnome.org/extension/3733/tiling-assistant/)
 * [dash-to-panel](https://extensions.gnome.org/extension/1160/dash-to-panel/)
 * [system-monitor](https://extensions.gnome.org/extension/120/system-monitor/)

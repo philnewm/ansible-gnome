@@ -5,9 +5,11 @@ dependencies:
     - python3-psutil
     - python3-lxml
     - glibc-langpack-en
+    - curl
   "Debian":
     - python3-psutil
     - python3-lxml
+    - curl
 
 system_local_lang: "en_US.UTF-8"
 

@@ -12,15 +12,16 @@
     cache_valid_time: 3600
 
 - name: RedHat based systems requirements
-  become: true
   when: ansible_os_family == "RedHat"
   block:
     - name: Enable CRB (CentOS Extras) repository
+      become: true
       community.general.dnf_config_manager:
         name: crb
         state: enabled
 
     - name: Import epel GPG key
+      become: true
       ansible.builtin.rpm_key:
         key: "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-{{ ansible_distribution_major_version }}"
         state: present
@@ -30,16 +31,19 @@
       delay: 10
 
     - name: Install epel repo
+      become: true
       ansible.builtin.dnf:
         name: epel-release
         state: present
 
     - name: Install distribution-gpg-keys package
+      become: true
       ansible.builtin.dnf:
         name: distribution-gpg-keys
         state: present
 
     - name: Import GPG keys
+      become: true
       loop: "{{ additional_rhel_repos }}"
       loop_control:
         loop_var: key
@@ -54,6 +58,7 @@
       delay: 10
 
     - name: Install additional repos
+      become: true
       loop: "{{ additional_rhel_repos }}"
       loop_control:
         loop_var: repo

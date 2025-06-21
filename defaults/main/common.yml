@@ -78,6 +78,5 @@ gdm_user_name:
 gdm_monitor_config_sys_path: 
   "RedHat": "/var/lib/gdm/.config"
   "Debian": "/var/lib/gdm3/.config"
-gdm_monitor_config_user_path: "{{ ansible_env.HOME }}/.config"
 
 ...

@@ -13,7 +13,10 @@
     src: "{{ theme.repo_url }}"
     dest: "{{ install_dir }}/"
     remote_src: true
-  register: git_result
+  register: download_result
+  until: download_result is succeeded
+  retries: 5
+  delay: 10
 
 - name: Update installer permissions
   ansible.builtin.file:

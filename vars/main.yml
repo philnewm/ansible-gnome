@@ -5,13 +5,13 @@ dependencies:
     - python3-psutil
     - python3-lxml
     - glibc-langpack-en
-    - curl  # required for gnome-shell-extension-installer
-    - unzip  # required for gnome-shell-extension-installer
   "Debian":
     - python3-psutil
     - python3-lxml
-    - curl  # required for gnome-shell-extension-installer
-    - unzip  # required for gnome-shell-extension-installer
+
+extension_installer_dependencies:
+  - curl
+  - unzip
 
 system_local_lang: "en_US.UTF-8"
 

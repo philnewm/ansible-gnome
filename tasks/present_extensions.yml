@@ -27,6 +27,14 @@
     state: absent
   diff: true
 
+- name: Install extension-installer dependencies
+  become: true
+  loop: "{{ extension_installer_dependencies }}"
+  when: item not in ansible_facts.packages
+  ansible.builtin.package:
+    name: "{{ item }}"
+    state: present
+
 - name: Download extension installer
   become: true
   ansible.builtin.get_url:

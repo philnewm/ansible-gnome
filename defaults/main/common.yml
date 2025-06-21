@@ -1,8 +1,8 @@
 ---
 
-# variables for basic gnome config
+state: present
 
-user_install_dir: "{{ (ansible_env.HOME, 'install') | ansible.builtin.path_join }}"
+install_dir: "/tmp/install"
 gnome_enable_reboot: true
 
 additional_rhel_repos:
@@ -56,6 +56,13 @@ obsolete_packages:
     # INFO gnome-remote-desktop is a part of gnome-control-center package
     - *osbolete_pkgs_default
 
+gdm_config_file:
+  "CentOS": "/etc/gdm/custom.conf"
+  "AlmaLinux": "/etc/gdm/custom.conf"
+  "Rocky": "/etc/gdm/custom.conf"
+  "Ubuntu": "/etc/gdm3/custom.conf"
+  "Debian": "/etc/gdm3/daemon.conf"
+
 gdm_default_resolution_x: 1280
 gdm_default_resolution_y: 800
 gdm_default_refresh_rate: 59.81
@@ -73,46 +80,4 @@ gdm_monitor_config_sys_path:
   "Debian": "/var/lib/gdm3/.config"
 gdm_monitor_config_user_path: "{{ ansible_env.HOME }}/.config"
 
-gdm_config_file:
-  "CentOS": "/etc/gdm/custom.conf"
-  "AlmaLinux": "/etc/gdm/custom.conf"
-  "Rocky": "/etc/gdm/custom.conf"
-  "Ubuntu": "/etc/gdm3/custom.conf"
-  "Debian": "/etc/gdm3/daemon.conf"
-
-gnome_base_settings:
-  "dconf_default": &dconf_default
-    # INFO obsolete if user theme gets added
-    # "/org/gnome/desktop/interface/gtk-theme": "'Adwaita-dark'"
-    "/system/locale/region": "'en_GB.UTF-8'"
-    "/org/gnome/desktop/interface/enable-hot-corners": "false"
-    "/org/gnome/desktop/input-sources/sources": "[('xkb', 'us+euro'), ('xkb', 'de')]"
-    "/org/gnome/desktop/input-sources/sources/per-window": "false"
-    "/org/gnome/desktop/input-sources/mru-sources": "[['xkb', 'us+euro'], ['xkb', 'de']]"
-    "/org/gnome/desktop/input-sources/xkb-options": "['caps:none']"
-    "/org/gnome/desktop/wm/keybindings/activate-window-menu": "@as []"
-    "/org/gnome/desktop/wm/preferences/action-middle-click-titlebar": "'minimize'"
-    "/org/gnome/mutter/attach-modal-dialogs": "false"
-    "/org/gnome/mutter/center-new-windows": "false"
-    "/org/gnome/mutter/edge-tiling": "false"
-    "/org/gnome/desktop/interface/clock-show-weekday": "true"
-    "/org/gnome/desktop/interface/font-name": "'Cantarell Bold 11'"
-    "/org/gnome/desktop/wm/preferences/titlebar-font": "'Carlito Bold Italic 11'"
-    "/org/gnome/tweaks/show-extensions-notice": "false"
-    "/org/gnome/desktop/wm/preferences/button-layout": "'close,maximize,minimize:appmenu'"
-    "/org/gnome/software/download-updates": "false"
-    "/org/gnome/software/first-run": "false"
-  "40":
-    <<: *dconf_default
-  "42":
-    # INFO obsolete if user theme gets added
-    # "/org/gnome/shell/extensions/user-theme/name": "'Yaru-magenta-dark'"
-    <<: *dconf_default
-    "/org/gnome/desktop/interface/color-scheme": "'prefer-dark'"
-  "43":
-    <<: *dconf_default
-    "/org/gnome/desktop/interface/color-scheme": "'prefer-dark'"
-    "/org/gnome/desktop/privacy/old-files-age": "30"
-    "/org/gnome/desktop/privacy/recent-files-max-age": "30"
-    "/org/gnome/desktop/privacy/remove-old-temp-files": "true"
-    "/org/gnome/desktop/privacy/remove-old-trash-files": "true"
+...

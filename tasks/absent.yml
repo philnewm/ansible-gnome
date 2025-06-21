@@ -1,67 +1,33 @@
 ---
 
-# tasks to remove gnome_setup
+- name: Get installed GNOME themes
+  ansible.builtin.find:
+    paths: "{{ theme_paths }}"
+    file_type: "any"
+    depth: 1
+  register: theme_dirs
 
-- name: Get users list
-  ansible.builtin.getent:
-    database: passwd
-
-# INFO get user names enabled for login
-- name: Extract usernames with valid shell
-  loop: "{{ getent_passwd | dict2items }}"
-  loop_control:
-    label: "{{ item.key }}"
-  when: item.value[5] in valid_shells
+- name: Set themes list (excluding 'hicolor')
   ansible.builtin.set_fact:
-    shell_users: "{{ shell_users | default([]) + [item.key] }}"
-
-- name: Remove user profile config file
-  become: true
-  loop: "{{ shell_users }}"
-  loop_control:
-    loop_var: shell_user
-  when: profile_pictures[shell_user] is defined
-  ansible.builtin.file:
-    path: "{{ profile_config_path }}/{{ shell_user }}"
-    state: absent
-
-- name: Remove user profile pictures
-  become: true
-  loop: "{{ shell_users }}"
-  loop_control:
-    loop_var: shell_user
-  when: profile_pictures[shell_user] is defined
-  ansible.builtin.file:
-    path: "{{ picture_dest_path }}/{{ shell_user }}"
-    state: absent
+    themes: >-
+      {{ theme_dirs.files
+        | map(attribute='path')
+        | map('basename')
+        | reject('equalto', 'hicolor')
+        | list }}
 
 - name: Remove themes
   become: true
-  loop: "{{ theme_paths }}"
-  loop_control:
-    loop_var: theme_path
+  loop: "{{ themes }}"
+  when: "'hicolor' not in item"
   ansible.builtin.file:
-    path: "{{ theme_path }}"
-    state: absent
-
-- name: Remove Gnome extension using package manager
-  loop: "{{ gnome_extensions }}"
-  loop_control:
-    label: "{{ extension.name }}"
-    loop_var: extension
-  when: extension.distro[ansible_distribution] is defined and extension.distro[ansible_distribution].package != "git"
-  become: true
-  ansible.builtin.package:
-    name: "{{ extension.distro[ansible_distribution].package }}"
+    path: "{{ item }}"
     state: absent
 
 - name: Remove manual installed extensions
   become: true
-  loop: "{{ extension_paths }}"
-  loop_control:
-    loop_var: extension_path
   ansible.builtin.file:
-    path: "{{ extension_path }}"
+    path: "{{ extension_path_system }}"
     state: absent
 
 - name: Set default target to multi-user

@@ -1,58 +1,23 @@
 ---
 
-- name: "Get theme from Github: {{ theme.value.name }}"
-  vars:
-    git_theme: "{{ theme_repo[theme.value.name] }}"
-  block:
-    - name: "Clone theme from github: {{ theme.value.name }}"
-      ansible.builtin.git:
-        repo: "{{ git_theme.repo_url }}"
-        dest: "{{ user_install_dir }}/{{ git_theme.download_dir }}"
-        single_branch: true
-        version: "{{ git_theme.branch[gnome_major_version.stdout] }}"
-        depth: 1
-      register: git_result
-      until: git_result is succeeded
-      retries: 5
-      delay: 10
+- name: Get installed GNOME themes
+  ansible.builtin.find:
+    paths: "{{ theme_paths }}"
+    file_type: directory
+    depth: 1
+  register: theme_dirs
 
-    - name: Update installer permissions
-      when: git_result.changed
-      ansible.builtin.file:
-        path: "{{ (user_install_dir, git_theme.install_dir, git_theme.installer) | ansible.builtin.path_join }}"
-        mode: "0755"
+- name: Set themes list
+  ansible.builtin.set_fact:
+    themes: "{{ theme_dirs.files | map(attribute='path') | map('basename') | list }}"
 
-    - name: Install git extension dependencies
-      become: true
-      when: git_theme.dependencies is defined
-      loop: "{{ git_theme.dependencies[ansible_os_family] }}"
-      loop_control:
-        loop_var: dependency
-      ansible.builtin.package:
-        name: "{{ dependency }}"
-        state: present
-
-    - name: "Install extension from github"
-      # become: true  # INFO might work without this due to password less sudo -> not the best idea if running as desktop user (no issue in testing due to vagrant having passwordless sudo active) Was required for wallpaper install since it accesses /usr/
-      when: git_result.changed
-      ansible.builtin.command: "{{ git_theme.install_cmd }}"
-      args:
-        chdir: "{{ user_install_dir }}/{{ git_theme.install_dir }}"
-      register: install_result
-      changed_when: install_result.rc == 0
-
-    - name: Remove downloaded repos
-      ansible.builtin.file:
-        path: "{{ user_install_dir }}"
-        state: absent
-
-    # INFO gnome-software-center not picking up theme on centos stream 9
-    - name: Configure themes
-      loop: "{{ theme.value.dconf | dict2items }}"
-      loop_control:
-        loop_var: dconf_entry
-      community.general.dconf:
-        key: "{{ dconf_entry.key }}"
-        value: "{{ dconf_entry.value | string }}"
+- name: Install themes
+  loop: "{{ gnome_themes }}"
+  loop_control:
+    label: "{{ theme.name }}"
+    loop_var: theme
+  when: theme.name not in themes
+  ansible.builtin.include_tasks:
+    file: install_themes.yml
 
 ...

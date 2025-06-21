@@ -1,0 +1,18 @@
+---
+
+- name: "Install extension {{ extension.name }}"
+  become: true
+  ansible.builtin.command:
+    cmd: "gnome-shell-extension-installer {{ extension.id }} --yes"
+  register: result
+  changed_when: result.rc == 0
+
+- name: Install extension dependencies
+  become: true
+  when: extension.dependencies is defined
+  loop: "{{ extension.dependencies[ansible_os_family] }}"
+  ansible.builtin.package:
+    name: "{{ item }}"
+    state: present
+
+...

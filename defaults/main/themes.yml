@@ -1,29 +1,16 @@
 ---
-# variables for gnome themes config
+
+themes_path: "/usr/share/themes"
+icons_path: "/usr/share/icons"
+wallpapers_path: "/usr/share/backgrounds"
+
+theme_paths:
+  - "{{ themes_path }}"
+  - "{{ icons_path }}"
+  - "{{ wallpapers_path }}"
 
 gnome_themes:
-  shell_theme:
-    name: "Lavanda-Dark"
-    dconf:
-      "/org/gnome/desktop/interface/gtk-theme": "'Lavanda-Dark'"
-      "/org/gnome/shell/extensions/user-theme/name": "'Lavanda-Dark'"
-  icon_theme:
-    name: "Tela-circle-purple-dark"
-    dconf: 
-      "/org/gnome/desktop/interface/icon-theme": "'Tela-circle-purple-dark'"
-  cursor_theme:
-    name: "Qogir-cursors"
-    dconf: 
-      "/org/gnome/desktop/interface/cursor-theme": "'Qogir-ubuntu-cursors'"
-  wallpaper:
-    name: "Dynamic_Wallpapers"
-    dconf:
-      "/org/gnome/desktop/background/picture-options": "'zoom'"
-      "/org/gnome/desktop/background/picture-uri": "'file:///usr/share/backgrounds/Dynamic_Wallpapers/BigSur.xml'"
-      "/org/gnome/desktop/background/picture-uri-dark": "'file:///usr/share/backgrounds/Dynamic_Wallpapers/BigSur.xml'"
-
-theme_repo:
-  "Lavanda-Dark":
+  - name: "Lavanda-Dark"
     dependencies:
       "RedHat":
         - gtk-murrine-engine
@@ -31,60 +18,29 @@ theme_repo:
       "Debian":
         - gtk2-engines-murrine
         - sassc
-    repo_url: "https://github.com/vinceliuice/Lavanda-gtk-theme.git"
-    branch:
-      "40": "main"
-      "42": "main"
-      "43": "main"
+    repo_url: "https://github.com/vinceliuice/Lavanda-gtk-theme/archive/refs/tags/2024-04-28.zip"
     installer: "install.sh"
-    install_cmd: "./install.sh --icon {{ ansible_distribution | lower }}"
+    install_cmd: "./install.sh --dest {{ themes_path }} --color dark --icon {{ ansible_distribution | lower }} --libadwaita"
     download_dir: "Lavanda-gtk-theme/"
-    install_dir: "Lavanda-gtk-theme/"
-  "Tela-circle-purple-dark":
-    repo_url: "https://github.com/vinceliuice/Tela-circle-icon-theme.git"
-    branch:
-      "40": "master"
-      "42": "master"
-      "43": "master"
+    install_dir: "Lavanda-gtk-theme-2024-04-28/"
+  - name: "Tela-circle-purple-dark"
+    repo_url: "https://github.com/vinceliuice/Tela-circle-icon-theme/archive/refs/tags/2025-02-10.zip"
     installer: "install.sh"
-    install_cmd: "./install.sh -c purple"
+    install_cmd: "./install.sh -d {{ icons_path }} -c purple"
     download_dir: "Tela-circle-icon-theme/"
-    install_dir: "Tela-circle-icon-theme/"
-  "Qogir-cursors":
-    repo_url: "https://github.com/vinceliuice/Qogir-icon-theme.git"
-    branch:
-      "40": "master"
-      "42": "master"
-      "43": "master"
+    install_dir: "Tela-circle-icon-theme-2025-02-10/"
+  - name: "Qogir-cursors"
+    repo_url: "https://github.com/vinceliuice/Qogir-icon-theme/archive/refs/tags/2025-02-15.zip"
     installer: "install.sh"
     install_cmd: "./install.sh"
-    download_dir: "Qogir-icon-theme/"
-    install_dir: "Qogir-icon-theme/src/cursors/"
+    download_dir: "Qogir-icon-theme-2025-02-15/"
+    install_dir: "Qogir-icon-theme-2025-02-15/src/cursors/"
   # TODO research a way to only download small list of wallpapers (Interactive_Install.sh in repo)
-  "Dynamic_Wallpapers":
-    repo_url: "https://github.com/saint-13/Linux_Dynamic_Wallpapers.git"
-    branch:
-      "40": "main"
-      "42": "main"
-      "43": "main"
+  - name: "Dynamic_Wallpapers"
+    repo_url: "https://github.com/saint-13/Linux_Dynamic_Wallpapers/archive/refs/heads/main.zip"
     installer: "install.sh"
     install_cmd: "./install.sh"
-    download_dir: "Linux_dynamic_Wallpapers/"
-    install_dir: "Linux_dynamic_Wallpapers/"
+    download_dir: "Linux_Dynamic_Wallpapers/"
+    install_dir: "Linux_Dynamic_Wallpapers-main/"
 
-backgrounds_dir: "/usr/share/backgrounds/Dynamic_Wallpapers"
-
-theme_paths:
-  - "{{ ansible_env.HOME }}/.themes/"
-  - ".local/share/icons/"
-  - "/usr/share/backgrounds/"
-
-picture_dest_path: /var/lib/AccountsService/icons
-profile_config_path: /var/lib/AccountsService/users
-profile_picture:
-  "vagrant": "vagrant"
-
-valid_shells:
-  - "/bin/bash"
-  - "/bin/sh"
-  - "/bin/zsh"
+...

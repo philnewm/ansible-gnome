@@ -1,0 +1,48 @@
+---
+
+- name: Create install directory
+  ansible.builtin.file:
+    path: "{{ install_dir }}"
+    state: "directory"
+    mode: "0744"
+    owner: "{{ ansible_env.USER }}"
+    group: "{{ ansible_effective_group_id }}"
+
+- name: "Download and extract {{ theme.name }}"
+  ansible.builtin.unarchive:
+    src: "{{ theme.repo_url }}"
+    dest: "{{ install_dir }}/"
+    remote_src: true
+  register: git_result
+  # until: git_result is succeeded
+  # retries: 5
+  # delay: 10
+
+- name: Update installer permissions
+  ansible.builtin.file:
+    path: "{{ (install_dir, theme.install_dir, theme.installer) | ansible.builtin.path_join }}"
+    mode: "0755"
+
+- name: Install git extension dependencies
+  become: true
+  when: theme.dependencies is defined
+  loop: "{{ theme.dependencies[ansible_os_family] }}"
+  ansible.builtin.package:
+    name: "{{ item }}"
+    state: present
+
+- name: "Install theme"
+  become: true
+  ansible.builtin.command:
+    cmd: "{{ theme.install_cmd }}"
+  args:
+    chdir: "{{ install_dir }}/{{ theme.install_dir }}"
+  register: install_result
+  changed_when: install_result.rc == 0
+
+- name: Remove install dir
+  ansible.builtin.file:
+    path: "{{ install_dir }}"
+    state: absent
+
+...

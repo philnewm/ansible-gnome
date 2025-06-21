@@ -1,70 +1,80 @@
 ---
 
-- name: Save dconf path
-  when: extension.dconf_path is defined
-  ansible.builtin.set_fact:
-    dconf_path: "{{ extension.dconf_path }}"
-
-- name: "Install Gnome extension {{ extension.name }}"
-  when: extension[ansible_os_family].package != "git"
+- name: Ensure system extensions directory exists
   become: true
-  ansible.builtin.package:
-    name: "{{ extension[ansible_os_family].package }}"
-    state: present
+  ansible.builtin.file:
+    path: "{{ extension_path_system }}"
+    state: "directory"
+    owner: root
+    group: root
+    mode: "0755"
 
-- name: "Get extension from Github: {{ extension.name }}"
-  when: extension[ansible_os_family].package == "git"
-  vars:
-    git_extension: "{{ git_ext[extension.name] }}"
-  block:
-    # TODO test installing in destination path "{{ ansible_env.HOME }}/.local/share/gnome-shell/extensions/" right away
-    - name: "Clone extension from github: {{ extension.name }}"
-      ansible.builtin.git:
-        repo: "{{ git_extension.repo_url }}"
-        dest: "{{ user_install_dir }}/{{ git_extension.download_dir }}"
-        single_branch: true
-        version: "{{ git_extension.branch[gnome_major_version.stdout] }}"
-        depth: 1
-      register: git_result
-      until: git_result is succeeded
-      retries: 5
-      delay: 10
+- name: Get installed GNOME extensions
+  ansible.builtin.command:
+    cmd: "ls {{ extension_path_system }}"
+  register: extensions_list_result
+  changed_when: false
 
-    - name: Update installer permissions
-      when: git_result.changed
-      ansible.builtin.file:
-        path: "{{ (user_install_dir, git_extension.install_dir, git_extension.installer) | ansible.builtin.path_join }}"
-        mode: "0755"
+- name: Set extensions list
+  ansible.builtin.set_fact:
+    extensions: "{{ extensions_list_result.stdout_lines }}"
 
-    - name: Install git extension dependencies
-      become: true
-      when: git_extension.dependencies is defined
-      loop: "{{ git_extension.dependencies[ansible_os_family] }}"
-      loop_control:
-        loop_var: dependency
-      ansible.builtin.package:
-        name: "{{ dependency }}"
-        state: present
+- name: Remove unwanted gnome extensions
+  become: true
+  loop: "{{ obsolete_gnome_extensions }}"
+  ansible.builtin.file:
+    path: "{{ extension_path_system }}/{{ item }}"
+    state: absent
+  diff: true
 
-    - name: "Install extension from github"
-      when: git_result.changed
-      ansible.builtin.shell: "{{ git_extension.install_cmd }}"
-      args:
-        chdir: "{{ user_install_dir }}/{{ git_extension.install_dir }}"
-      register: install_result
-      changed_when: install_result.rc == 0
-      failed_when: install_result.rc not in [0, 2]  # INFO make install errors for clipboard-indicator even tho it works
+# - name: Install native extension packages
+#   become: true
+#   loop: "{{ gnome_extensions_distro }}"
+#   loop_control:
+#     label: "{{ extension.name }}"
+#     loop_var: extension
+#   when: extension[ansible_os_family].address not in extensions
+#   ansible.builtin.package:
+#     name: "{{ extension[ansible_os_family].package }}"
+#     state: present
 
-    - name: Remove downloaded repos
-      ansible.builtin.file:
-        path: "{{ user_install_dir }}"
-        state: absent
+- name: Download extension installer
+  become: true
+  ansible.builtin.get_url:
+    url: https://github.com/brunelli/gnome-shell-extension-installer/raw/master/gnome-shell-extension-installer
+    dest: /usr/bin/gnome-shell-extension-installer
+    mode: '0755'
 
-- name: Configure extension
-  when: extension.dconf_settings is defined
-  loop: "{{ extension.dconf_settings | dict2items }}"
+- name: Install extensions
+  loop: "{{ gnome_extensions }}"
   loop_control:
-    loop_var: dconf_setting
+    label: "{{ extension.name }}"
+    loop_var: extension
+  when: extension.address not in extensions
+  ansible.builtin.include_tasks:
+    file: install_extensions.yml
+
+- name: Get installed GNOME extensions
+  ansible.builtin.command:
+    cmd: "ls {{ extension_path_system }}"
+  register: extensions_list_result
+  changed_when: false
+
+- name: Set extensions list
+  ansible.builtin.set_fact:
+    extensions: "{{ extensions_list_result.stdout_lines }}"
+
+- name: Update extension persmissions
+  become: true
+  loop: "{{ extensions }}"
+  ansible.builtin.file:
+    path: "{{ extension_path_system }}/{{ item }}/metadata.json"
+    mode: "0644"
+
+- name: Enable installed extensions
   community.general.dconf:
-    key: "{{ dconf_setting.key }}"
-    value: "{{ dconf_setting.value | string }}"
+    key: "/org/gnome/shell/enabled-extensions"
+    value: "{{ extensions | to_json }}"
+  diff: true
+
+...

@@ -1,5 +1,4 @@
 ---
-# requirements file
 
 - name: Gather package facts
   ansible.builtin.package_facts:
@@ -115,3 +114,5 @@
     cmd: "localectl set-locale {{ system_local_lang }}"
   register: set_locale_result
   changed_when: set_locale_result.rc == 0
+
+...

@@ -1,10 +1,5 @@
 ---
 
-- name: Initialize role library
-  ansible.builtin.include_role:
-    name: ansible-gnome
-    tasks_from: init
-
 - name: Gather package facts
   ansible.builtin.package_facts:
 
@@ -96,56 +91,25 @@
     fail_msg: "One or both of the expected lines are not present in {{ gdm_config_file[ansible_distribution] }}"
     quiet: true
 
-- name: Get Gnome version
-  ansible.builtin.shell:
-    cmd: |
-      set -o pipefail
-      gnome-shell --version | awk '{print $3}' | cut -d'.' -f1
-  args:
-    executable: /bin/bash
-  register: gnome_major_version
-  changed_when: false
-
-- name: Get gnome base settings
-  loop: "{{ gnome_base_settings[gnome_major_version.stdout] | dict2items }}"
-  community.general.dconf:
-    key: "{{ item.key }}"
-    state: read
-  register: dconf_list
-
-- name: Test gnome settings
-  loop: "{{ dconf_list.results }}"
-  loop_control:
-    loop_var: entry
-    label: "{{ entry.item.key }}"
-  ansible.builtin.assert:
-    that:
-      - entry.value == gnome_base_settings[gnome_major_version.stdout][entry.item.key]
-    fail_msg: |
-      "Expected value '{{ gnome_base_settings[gnome_major_version.stdout][entry.item.key] }}'
-      but got '{{ entry.value }}' instead for key '{{ entry.item.key }}'."
-    quiet: true
-
 - name: Get installed GNOME extensions
-  ansible.builtin.shell:
-    cmd: |
-      set -o pipefail
-      ls -1d {{ extension_paths | join('* ') }}* | xargs -n1 basename | cat
-  args:
-    executable: /bin/bash
-  register: gnome_extensions_list
+  ansible.builtin.command:
+    cmd: "ls {{ extension_path_system }}"
+  register: extensions_list_result
   changed_when: false
+
+- name: Set extensions list
+  ansible.builtin.set_fact:
+    present_extensions: "{{ extensions_list_result.stdout_lines }}"
 
 - name: Test installed extensions
   loop: "{{ gnome_extensions }}"
   loop_control:
     label: "{{ extension.name }}"
     loop_var: extension
-  when: extension[ansible_os_family] is defined
   ansible.builtin.assert:
     that:
-      extension[ansible_os_family].address in gnome_extensions_list.stdout_lines
-    fail_msg: "Failed to find '{{ extension[ansible_os_family].address }}' in installed extensions."
+      extension.address in present_extensions
+    fail_msg: "Failed to find '{{ extension.address }}' in installed extensions."
     quiet: true
 
 - name: Get enabled extensions
@@ -159,11 +123,10 @@
   loop_control:
     label: "{{ extension.name }}"
     loop_var: extension
-  when: extension[ansible_os_family] is defined
   ansible.builtin.assert:
     that:
-      extension[ansible_os_family].address in enabled_extensions_list.value
-    fail_msg: "'{{ extension[ansible_os_family].address }}' did not get enabled."
+      extension.address in enabled_extensions_list.value
+    fail_msg: "'{{ extension.address }}' did not get enabled."
     quiet: true
 
 - name: Get disabled extensions
@@ -171,10 +134,6 @@
     key: "/org/gnome/shell/disabled-extensions"
     state: read
   register: disabled_extensions_list
-
-- name: Show disabled extensions
-  ansible.builtin.debug:
-    var: disabled_extensions_list
 
 - name: Test disabled extensions
   ansible.builtin.assert:
@@ -193,70 +152,26 @@
   ansible.builtin.set_fact:
     ext_dconf: "{{ ext_dconf | default({}) | combine(ext.dconf_settings) }}"
 
-- name: Get gnome extension settings
-  loop: "{{ ext_dconf | dict2items }}"
-  loop_control:
-    label: "{{ item.key }}"
-  community.general.dconf:
-    key: "{{ item.key }}"
-    state: read
-  register: ext_dconf_value_list
+- name: Get installed GNOME themes
+  ansible.builtin.find:
+    paths: "{{ theme_paths }}"
+    file_type: directory
+    depth: 1
+  register: theme_dirs
 
-- name: Test gnome extension settings
-  loop: "{{ ext_dconf_value_list.results }}"
-  loop_control:
-    loop_var: entry
-    label: "{{ entry.item.key }}"
-  ansible.builtin.assert:
-    that:
-      - entry.item.value == ext_dconf[entry.item.key]
-    fail_msg: "Expected value '{{ ext_dconf[entry.item.key] }}' but got '{{ entry.value }}' instead for key '{{ entry.item.key }}'."
-    quiet: true
-
-- name: Get installed gnome themes
-  ansible.builtin.shell:
-    cmd: |
-      set -o pipefail
-      ls -1d {{ theme_paths | join('* ') }}* | xargs -n1 basename | cat
-  args:
-    executable: /bin/bash
-  register: gnome_themes_list
-  changed_when: false
+- name: Set themes list
+  ansible.builtin.set_fact:
+    present_themes: "{{ theme_dirs.files | map(attribute='path') | map('basename') | list }}"
 
 - name: Test installed gnome themes
-  loop: "{{ gnome_themes | dict2items }}"
+  loop: "{{ gnome_themes }}"
   loop_control:
     loop_var: theme
-    label: "{{ theme.value.name }}"
+    label: "{{ theme.name }}"
   ansible.builtin.assert:
     that:
-      theme.value.name in gnome_themes_list.stdout_lines
-    fail_msg: "Theme {{ theme.value.name }} not found."
-    quiet: true
-
-- name: Collect themes dconf config
-  loop: "{{ gnome_themes | dict2items }}"
-  loop_control:
-    label: "{{ item.value.name }}"
-  ansible.builtin.set_fact:
-    theme_dconf: "{{ theme_dconf | default({}) | combine(item.value.dconf) }}"
-
-- name: Get gnome theme settings
-  loop: "{{ theme_dconf | dict2items }}"
-  community.general.dconf:
-    key: "{{ item.key }}"
-    state: read
-  register: theme_dconf_value_list
-
-- name: Test gnome theme settings
-  loop: "{{ theme_dconf_value_list.results }}"
-  loop_control:
-    loop_var: entry
-    label: "{{ entry.item.key }}"
-  ansible.builtin.assert:
-    that:
-      - entry.item.value == theme_dconf[entry.item.key]
-    fail_msg: "Expected value '{{ theme_dconf[entry.item.key] }}' but got '{{ entry.value }}' instead for key '{{ entry.item.key }}'."
+      theme.name in present_themes
+    fail_msg: "Theme {{ theme.name }} not found."
     quiet: true
 
 - name: Read display server resolution_x
@@ -285,69 +200,6 @@
       x{{ gdm_default_resolution_y }} was expected, got
         {{ width_value.matches[0].width }}x{{ height_value.matches[0].height }}
         instead"
-
-- name: Read user session resolution_x
-  community.general.xml:
-    path: "{{ gdm_monitor_config_user_path }}/monitors.xml"
-    xpath: '/monitors/configuration/logicalmonitor/monitor/mode/width'
-    content: text
-  register: user_width_value
-
-- name: Read user session resolution_y
-  community.general.xml:
-    path: "{{ gdm_monitor_config_user_path }}/monitors.xml"
-    xpath: '/monitors/configuration/logicalmonitor/monitor/mode/height'
-    content: text
-  register: user_height_value
-
-- name: Verify expected user session resolution
-  ansible.builtin.assert:
-    that:
-      - user_width_value.matches[0].width | int == gdm_default_resolution_x
-      - user_height_value.matches[0].height | int == gdm_default_resolution_y
-    fail_msg: >
-      "A user session resolution of {{ gdm_default_resolution_x }}x
-      {{ gdm_default_resolution_y }} was expected, got
-        {{ user_width_value.matches[0] }}x{{ user_height_value.matches[0] }}
-        instead"
-
-- name: Get users list
-  ansible.builtin.getent:
-    database: passwd
-
-- name: Extract usernames with valid shell
-  loop: "{{ getent_passwd | dict2items }}"
-  loop_control:
-    label: "{{ item.key }}"
-  when: item.value[5] in valid_shells
-  ansible.builtin.set_fact:
-    shell_users: "{{ shell_users | default([]) + [item.key] }}"
-
-- name: Get profile config
-  become: true
-  loop: "{{ shell_users }}"
-  loop_control:
-    loop_var: shell_user
-  when: profile_pictures[shell_user] is defined
-  ansible.builtin.command:
-    cmd: "cat /var/lib/AccountsService/users/{{ shell_user }}"
-  register: profile_config
-  changed_when: false
-
-# assert configured profile picture
-- name: Assert profile picture for username
-  loop: "{{ profile_config.results }}"
-  loop_control:
-    loop_var: profile
-    label: profile.shell_user
-  when: profile.stdout_lines is defined
-  ansible.builtin.assert:
-    that:
-      "'Icon=' ~ picture_dest_path ~ '/' ~ profile.shell_user in profile.stdout_lines"
-    fail_msg: |
-      "Expected profile picture path 'Icon={{ picture_dest_path }}/
-      {{ profile.shell_user }}' is not present in
-      {{ profile_config_path }}/{{ profile.shell_user }}"
     quiet: true
 
 ...

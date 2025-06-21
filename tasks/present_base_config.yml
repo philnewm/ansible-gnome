@@ -1,9 +1,0 @@
----
-
-- name: Configure basic gnome-settings
-  community.general.dconf:
-    key: "{{ item.key }}"
-    value: "{{ item.value | string }}"
-  loop: "{{ gnome_base_settings[gnome_major_version.stdout] | dict2items }}"
-
-...

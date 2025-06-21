@@ -1,16 +1,13 @@
 ---
-# vars file for gnome_config
 
 dependencies:
   "RedHat":
     - python3-psutil
     - python3-lxml
-    - git
     - glibc-langpack-en
   "Debian":
     - python3-psutil
     - python3-lxml
-    - git
 
 system_local_lang: "en_US.UTF-8"
 

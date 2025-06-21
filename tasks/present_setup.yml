@@ -15,6 +15,7 @@
     name: "{{ item }}"
     state: absent
 
+# TODO compatible for other oses
 - name: Check if /dev/mapper/almalinux-home exists
   ansible.builtin.stat:
     path: /dev/mapper/almalinux-home
@@ -52,29 +53,5 @@
     mode: "0644"
     owner: "{{ gdm_user_name[ansible_distribution] }}"
     group: "{{ gdm_user_name[ansible_distribution] }}"
-
-- name: Create user default resolution path
-  ansible.builtin.file:
-    path: "{{ gdm_monitor_config_user_path }}"
-    state: directory
-    mode: "0700"
-
-- name: Set user default resolution
-  ansible.builtin.template:
-    src: monitors.xml.j2
-    dest: "{{ gdm_monitor_config_user_path }}/monitors.xml"
-    mode: "0644"
-    owner: "{{ ansible_env.USER }}"
-    group: "{{ ansible_effective_group_id }}"
-
-- name: Get Gnome version
-  ansible.builtin.shell:
-    cmd: |
-      set -o pipefail
-      gnome-shell --version | awk '{print $3}' | cut -d'.' -f1
-  args:
-    executable: /bin/bash
-  register: gnome_major_version
-  changed_when: false
 
 ...

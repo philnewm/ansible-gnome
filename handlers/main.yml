@@ -1,7 +1,5 @@
 ---
 
-# handlers file for gnome_setup
-
 - name: Reboot Host
   become: true
   when: gnome_enable_reboot

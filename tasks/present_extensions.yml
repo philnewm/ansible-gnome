@@ -27,17 +27,6 @@
     state: absent
   diff: true
 
-# - name: Install native extension packages
-#   become: true
-#   loop: "{{ gnome_extensions_distro }}"
-#   loop_control:
-#     label: "{{ extension.name }}"
-#     loop_var: extension
-#   when: extension[ansible_os_family].address not in extensions
-#   ansible.builtin.package:
-#     name: "{{ extension[ansible_os_family].package }}"
-#     state: present
-
 - name: Download extension installer
   become: true
   ansible.builtin.get_url:

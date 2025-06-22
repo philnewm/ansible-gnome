@@ -37,10 +37,12 @@ gnome_packages:
     - *gnome_pkgs_default
     - gnome-extensions-app
     - gnome-control-center-filesystem
+    - nextcloud-client-nautilus
   "Debian":
     - *gnome_pkgs_default
     - gnome-shell-extension-prefs
     - gnome-control-center
+    - nautilus-nextcloud
 
 obsolete_packages:
   "default": &osbolete_pkgs_default

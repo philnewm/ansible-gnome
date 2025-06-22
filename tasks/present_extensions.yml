@@ -25,7 +25,6 @@
   ansible.builtin.file:
     path: "{{ extension_path_system }}/{{ item }}"
     state: absent
-  diff: true
 
 - name: Install extension-installer dependencies
   become: true
@@ -72,6 +71,5 @@
   community.general.dconf:
     key: "/org/gnome/shell/enabled-extensions"
     value: "{{ extensions | to_json }}"
-  diff: true
 
 ...

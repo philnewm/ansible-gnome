@@ -2,6 +2,7 @@
 
 - name: Set default target to graphical
   become: true
+  when: not headless_mode
   ansible.builtin.file:
     src: /usr/lib/systemd/system/graphical.target
     dest: /etc/systemd/system/default.target

@@ -4,6 +4,7 @@ state: present
 
 install_dir: "/tmp/install"
 gnome_enable_reboot: true
+headless_mode: false
 
 additional_rhel_repos:
   - name: rpmfusion-free

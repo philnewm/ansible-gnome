@@ -34,7 +34,6 @@ gnome_packages:
     - gnome-devel-docs
     - gnome-disk-utility
     - baobab
-    - firefox
   "RedHat":
     - *gnome_pkgs_default
     - gnome-extensions-app

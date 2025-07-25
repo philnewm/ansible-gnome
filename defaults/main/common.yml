@@ -14,13 +14,22 @@ additional_rhel_repos:
     gpg_key: "/usr/share/distribution-gpg-keys/rpmfusion/RPM-GPG-KEY-rpmfusion-nonfree-el-{{ ansible_distribution_major_version }}"
     src: "https://mirrors.rpmfusion.org/nonfree/el/rpmfusion-nonfree-release-{{ ansible_distribution_major_version }}.noarch.rpm"
 
-gedit_plugins: &gedit_plugins
-  - gedit-plugin-terminal
-  - gedit-plugin-drawspaces
-  - gedit-plugin-textsize
-  - gedit-plugin-findinfiles
-  - gedit-plugin-bracketcompletion
-  - gedit-plugin-bookmarks
+gedit_plugins:
+  Debian:
+    - gedit-plugin-terminal
+    - gedit-plugin-draw-spaces
+    - gedit-plugin-text-size
+    - gedit-plugin-find-in-files
+    - gedit-plugin-bracket-completion
+    - gedit-plugin-bookmarks
+  RedHat:
+    - gedit-plugin-terminal
+    - gedit-plugin-drawspaces
+    - gedit-plugin-textsize
+    - gedit-plugin-findinfiles
+    - gedit-plugin-bracketcompletion
+    - gedit-plugin-bookmarks
+
 
 gnome_packages:
   "default": &gnome_pkgs_default
@@ -31,7 +40,6 @@ gnome_packages:
     - gnome-system-monitor
     - gnome-software
     - gedit
-    - *gedit_plugins
     - eog
     - nautilus
     - gnome-calculator

@@ -2,7 +2,7 @@
 
 - name: Install Gnome packages
   when: item not in ansible_facts.packages
-  loop: "{{ gnome_packages[ansible_os_family] | flatten(1) }}"
+  loop: "{{ (gnome_packages[ansible_os_family] + gedit_plugins[ansible_os_family]) | flatten(1) }}"
   become: true
   ansible.builtin.package:
     name: "{{ item }}"

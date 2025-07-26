@@ -19,7 +19,7 @@ gedit_plugins:
     - gedit-plugin-terminal
     - gedit-plugin-draw-spaces
     - gedit-plugin-text-size
-    - gedit-plugin-find-in-files
+    # - gedit-plugin-find-in-files  # INFO package missing for debian 12
     - gedit-plugin-bracket-completion
     - gedit-plugin-bookmarks
   RedHat:

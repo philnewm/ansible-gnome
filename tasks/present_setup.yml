@@ -15,6 +15,28 @@
     name: "{{ item }}"
     state: absent
 
+- name: Get installed apps
+  ansible.builtin.find:
+    paths:
+      - "/opt"
+      - "/usr"
+    file_type: directory
+    depth: 1
+  register: app_dirs
+
+- name: Set apps list
+  ansible.builtin.set_fact:
+    present_apps: "{{ app_dirs.files | map(attribute='path') | map('basename') | list }}"
+
+- name: Install custom apps
+  loop: "{{ custom_apps }}"
+  loop_control:
+    label: "{{ app.name }}"
+    loop_var: app
+  when: app.name | lower not in present_apps
+  ansible.builtin.include_tasks:
+    file: custom_apps.yml
+
 # TODO compatible for other oses
 - name: Check if /dev/mapper/almalinux-home exists
   ansible.builtin.stat:

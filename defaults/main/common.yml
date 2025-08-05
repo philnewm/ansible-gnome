@@ -30,7 +30,6 @@ gedit_plugins:
     - gedit-plugin-bracketcompletion
     - gedit-plugin-bookmarks
 
-
 gnome_packages:
   "default": &gnome_pkgs_default
     - gnome-shell
@@ -51,6 +50,7 @@ gnome_packages:
     - gnome-devel-docs
     - gnome-disk-utility
     - baobab
+    - meld
   "RedHat":
     - *gnome_pkgs_default
     - gnome-extensions-app
@@ -76,6 +76,15 @@ obsolete_packages:
     # INFO gnome-remote-desktop is a part of gnome-control-center package
     - *osbolete_pkgs_default
 
+custom_apps:
+  - name: "Mission_Center"
+    id: "io.missioncenter.MissionCenter"
+    archive: "AppImage"
+    download_url: "https://gitlab.com/mission-center-devs/mission-center/-/jobs/10144675634/artifacts/raw/MissionCenter_v1.0.2-x86_64.AppImage"
+    dependencies:
+      RedHat:
+      - libxcrypt-compat
+
 gdm_config_file:
   "CentOS": "/etc/gdm/custom.conf"
   "AlmaLinux": "/etc/gdm/custom.conf"
@@ -95,7 +104,7 @@ gdm_user_name:
   "Rocky": "gdm"
   "Ubuntu": "gdm"
   "Debian": "Debian-gdm"
-gdm_monitor_config_sys_path: 
+gdm_monitor_config_sys_path:
   "RedHat": "/var/lib/gdm/.config"
   "Debian": "/var/lib/gdm3/.config"
 

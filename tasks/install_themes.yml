@@ -23,7 +23,7 @@
     path: "{{ (install_dir, theme.install_dir, theme.installer) | ansible.builtin.path_join }}"
     mode: "0755"
 
-- name: Install git extension dependencies
+- name: Install theme dependencies
   become: true
   when: theme.dependencies is defined
   loop: "{{ theme.dependencies[ansible_os_family] }}"

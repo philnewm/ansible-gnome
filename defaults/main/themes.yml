@@ -35,12 +35,11 @@ gnome_themes:
     install_cmd: "./install.sh"
     download_dir: "Qogir-icon-theme-2025-02-15/"
     install_dir: "Qogir-icon-theme-2025-02-15/src/cursors/"
-  # TODO research a way to only download small list of wallpapers (Interactive_Install.sh in repo)
-  - name: "Dynamic_Wallpapers"
-    repo_url: "https://github.com/saint-13/Linux_Dynamic_Wallpapers/archive/refs/heads/main.zip"
+  - name: "dynamic_wallpapers"
+    repo_url: "https://github.com/philnewm/gnome-dynamic-wallpapers/archive/refs/heads/main.zip"
     installer: "install.sh"
     install_cmd: "./install.sh"
-    download_dir: "Linux_Dynamic_Wallpapers/"
-    install_dir: "Linux_Dynamic_Wallpapers-main/"
+    download_dir: "gnome-dynamic-wallpapers/"
+    install_dir: "gnome-dynamic-wallpapers-main/"
 
 ...

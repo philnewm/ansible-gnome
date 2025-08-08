@@ -76,14 +76,9 @@ obsolete_packages:
     # INFO gnome-remote-desktop is a part of gnome-control-center package
     - *osbolete_pkgs_default
 
-custom_apps:
-  - name: "Mission_Center"
-    id: "io.missioncenter.MissionCenter"
-    archive: "AppImage"
-    download_url: "https://gitlab.com/mission-center-devs/mission-center/-/jobs/10144675634/artifacts/raw/MissionCenter_v1.0.2-x86_64.AppImage"
-    dependencies:
-      RedHat:
-      - libxcrypt-compat
+flatpaks:
+  - io.missioncenter.MissionCenter
+  - org.gtk.Gtk3theme.Adwaita-dark
 
 gdm_config_file:
   "CentOS": "/etc/gdm/custom.conf"

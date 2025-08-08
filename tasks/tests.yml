@@ -52,26 +52,20 @@
     fail_msg: "Obsolete Gnome package {{ item }} is still rpesent"
     quiet: true
 
-- name: Get installed apps
-  ansible.builtin.find:
-    paths:
-      - "/opt"
-      - "/usr"
-    file_type: directory
-    depth: 1
-  register: app_dirs
+- name: Get installed flatpaks
+  ansible.builtin.command:
+    cmd: flatpak list --columns=application
+  register: present_flatpaks
+  changed_when: false
 
-- name: Set apps list
-  ansible.builtin.set_fact:
-    present_apps: "{{ app_dirs.files | map(attribute='path') | map('basename') | list }}"
-
-- name: Test custom apps
-  loop: "{{ custom_apps }}"
+- name: Test installed flatpaks
+  loop: "{{ flatpaks }}"
   loop_control:
-    label: "{{ item.name }}"
+    loop_var: "flatpak"
+    label: "{{ flatpak }}"
   ansible.builtin.assert:
-    that: item.name | lower in present_apps
-    fail_msg: "Failed to find {{ item.name }} at '/opt' or '/usr'"
+    that: flatpak in present_flatpaks.stdout_lines
+    fail_msg: "Failed to find {{ flatpak }} in installed flatpaks"
     quiet: true
 
 - name: Check if /dev/mapper/almalinux-home exists

@@ -1,14 +1,16 @@
 ---
 
 - name: Create install directory
+  become: true
   ansible.builtin.file:
     path: "{{ install_dir }}"
     state: "directory"
     mode: "0744"
-    owner: "{{ ansible_env.USER }}"
-    group: "{{ ansible_effective_group_id }}"
+    owner: "root"
+    group: "root"
 
 - name: "Download and extract {{ theme.name }}"
+  become: true
   ansible.builtin.unarchive:
     src: "{{ theme.repo_url }}"
     dest: "{{ install_dir }}/"
@@ -19,6 +21,7 @@
   delay: 10
 
 - name: Update installer permissions
+  become: true
   ansible.builtin.file:
     path: "{{ (install_dir, theme.install_dir, theme.installer) | ansible.builtin.path_join }}"
     mode: "0755"
@@ -41,6 +44,7 @@
   changed_when: install_result.rc == 0
 
 - name: Remove install dir
+  become: true
   ansible.builtin.file:
     path: "{{ install_dir }}"
     state: absent

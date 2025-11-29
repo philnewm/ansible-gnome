@@ -9,59 +9,11 @@
         name: crb
         state: enabled
 
-    # - name: Import epel GPG key
-    #   become: true
-    #   ansible.builtin.rpm_key:
-    #     key: "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-{{ ansible_distribution_major_version }}"
-    #     state: present
-    #   register: result
-    #   until: result is succeeded
-    #   retries: 5
-    #   delay: 10
-
     - name: Install epel repo
       become: true
       ansible.builtin.dnf:
         name: epel-release
         state: present
-
-    # - name: Install distribution-gpg-keys package
-    #   become: true
-    #   ansible.builtin.dnf:
-    #     name: distribution-gpg-keys
-    #     state: present
-
-# TODO enable fusion repos for fedora
-# - name: Import GPG keys
-#   become: true
-#   loop: "{{ gnome_rpmfusion_repos }}"
-#   loop_control:
-#     loop_var: key
-#     label: "{{ key.name }}"
-#   when: key.name not in ansible_facts.packages
-#   ansible.builtin.rpm_key:
-#     key: "{{ key.gpg_key }}"
-#     state: present
-#   register: result
-#   until: result is succeeded
-#   retries: 5
-#   delay: 10
-
-# - name: Install additional repos
-#   become: true
-#   loop: "{{ gnome_rpmfusion_repos }}"
-#   loop_control:
-#     loop_var: repo
-#     label: "{{ repo.name }}"
-#   when: repo.name not in ansible_facts.packages
-#   ansible.builtin.dnf:
-#     name: "{{ repo.src }}"
-#     state: present
-#     update_cache: true
-#   register: result
-#   until: result is succeeded
-#   retries: 5
-#   delay: 10
 
 - name: Set up repos
   become: true

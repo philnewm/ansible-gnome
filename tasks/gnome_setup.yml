@@ -2,7 +2,7 @@
 
 - name: Install Gnome packages
   when: item not in ansible_facts.packages
-  loop: "{{ (gnome_packages[ansible_os_family] + gedit_plugins[ansible_os_family]) | flatten(1) }}"
+  loop: "{{ (gnome_packages[ansible_os_family] + gnome_gedit_plugins) | flatten(1) }}"  # gedit_plugins[ansible_os_family]) | flatten(1)
   become: true
   ansible.builtin.package:
     name: "{{ item }}"
@@ -17,31 +17,15 @@
 
 - name: Remove obsolete Gnome packages
   become: true
-  loop: "{{ obsolete_packages[ansible_os_family] | flatten(1) }}"
+  loop: "{{ gnome_obsolete_packages[ansible_os_family] | flatten(1) }}"
   ansible.builtin.package:
     name: "{{ item }}"
     state: absent
 
-# TODO compatible for other oses
-- name: Check if /dev/mapper/almalinux-home exists
-  ansible.builtin.stat:
-    path: /dev/mapper/almalinux-home
-  register: home_mapper
-
-- name: Get filesystem type of /home
-  when: home_mapper.stat.exists
-  ansible.builtin.command: "findmnt -n -o FSTYPE /home"
-  register: home_fs_type
-  changed_when: false
-
-- name: Modify /etc/fstab dynamically
-  become: true
-  when: home_mapper.stat.exists
-  ansible.builtin.lineinfile:
-    path: /etc/fstab
-    regexp: '^/dev/mapper/almalinux-home'
-    line: "/dev/mapper/almalinux-home /home {{ home_fs_type.stdout }} defaults,x-gvfs-show,x-gvfs-name=Home 0 0"
-    state: present
+- name: Adjust almalinux home mapper for disk analyzer usage
+  when: ansible_distribution | lower == "almalinux"
+  ansible.builtin.include_tasks:
+    file: almalinux_home_mapper.yml
 
 - name: Create system default resolution path
   become: true

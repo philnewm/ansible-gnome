@@ -1,6 +1,12 @@
 ---
 
-dependencies:
+gnome_rhel_derivatives:
+  - redhat
+  - centos
+  - almalinux
+  - rocky
+
+gnome_dependencies:
   "RedHat":
     - python3-psutil
     - python3-lxml

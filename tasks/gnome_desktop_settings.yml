@@ -9,14 +9,22 @@
     state: link
   notify: Reboot Host
 
+- name: Check for Xorg presence
+  become: true
+  ansible.builtin.command:
+    cmd: Xorg -version
+  changed_when: false
+  register: xorg_result
+
 - name: Update GDM configuration file
+  become: true
+  when: xorg_result.rc == 0
   ansible.builtin.lineinfile:
     path: "{{ gdm_config_file[ansible_distribution] }}"
     backrefs: true
     regexp: '^#WaylandEnable=false$'
     line: 'WaylandEnable=false\nDefaultSession=gnome-xorg.desktop'
     state: present
-  become: true
   notify: Reboot Host
 
 - name: Remove unused dependencies

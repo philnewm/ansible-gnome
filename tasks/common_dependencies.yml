@@ -1,0 +1,50 @@
+---
+
+- name: Install Flatpak
+  become: true
+  ansible.builtin.package:
+    name: flatpak
+    state: present
+
+- name: Add the flathub flatpak repository remote
+  become: true
+  community.general.flatpak_remote:
+    name: flathub
+    state: present
+    flatpakrepo_url: https://dl.flathub.org/repo/flathub.flatpakrepo
+
+- name: Remove filters from flathub
+  become: true
+  when: ansible_distribution == "Fedora"
+  ansible.builtin.command:
+    cmd: flatpak remote-modify --no-filter flathub
+  changed_when: false
+
+- name: Install global gnome dependencies
+  become: true
+  loop: "{{ gnome_dependencies[ansible_os_family] }}"
+  when: item not in ansible_facts.packages
+  ansible.builtin.package:
+    name: "{{ item }}"
+    state: present
+
+- name: Get current system locale
+  ansible.builtin.shell:
+    cmd: |
+      set -o pipefail
+      localectl status | awk '/LANG/{print $3}' | cut -d'=' -f2
+  args:
+    executable: /bin/bash
+  register: current_locale
+  changed_when: false
+
+# INFO alma9 box missing default locals -> extension system-monitor fails to activate if locals are missing
+- name: "Set system locale to {{ system_local_lang }}"
+  when: current_locale.stdout != system_local_lang
+  become: true
+  ansible.builtin.command:
+    cmd: "localectl set-locale {{ system_local_lang }}"
+  register: set_locale_result
+  changed_when: set_locale_result.rc == 0
+
+...

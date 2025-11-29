@@ -10,24 +10,28 @@
 - name: Gather package facts
   ansible.builtin.package_facts:
 
-- name: Include dependencies
+- name: Include os_family specific dependencies
   ansible.builtin.include_tasks:
-    file: dependencies.yml
+    file: "{{ ansible_os_family | lower }}_repos.yml"
 
-- name: Include gnome base installation
+- name: Include common dependencies
   ansible.builtin.include_tasks:
-    file: present_setup.yml
+    file: common_dependencies.yml
+
+- name: Include gnome base setup
+  ansible.builtin.include_tasks:
+    file: gnome_setup.yml
 
 - name: Include gnome extensions
   ansible.builtin.include_tasks:
-    file: present_extensions.yml
+    file: gnome_extensions.yml
 
 - name: Include gnome themes
   ansible.builtin.include_tasks:
-    file: present_themes.yml
+    file: gnome_themes.yml
 
 - name: Include system for gnome desktop
   ansible.builtin.include_tasks:
-    file: present_finalize.yml
+    file: gnome_desktop_settings.yml
 
 ...

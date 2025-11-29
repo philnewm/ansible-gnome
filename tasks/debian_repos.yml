@@ -1,0 +1,10 @@
+---
+
+- name: Update package cache
+  become: true
+  ansible.builtin.apt:
+    autoclean: true
+    update_cache: true
+    cache_valid_time: 3600
+
+...

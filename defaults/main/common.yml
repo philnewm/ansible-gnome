@@ -5,30 +5,29 @@ state: present
 install_dir: "/tmp/install"
 gnome_enable_reboot: true
 headless_mode: false
+gnome_rpm_fusion_target_distro: "EL"
 
-additional_rhel_repos:
-  - name: rpmfusion-free
-    gpg_key: "/usr/share/distribution-gpg-keys/rpmfusion/RPM-GPG-KEY-rpmfusion-free-el-{{ ansible_distribution_major_version }}"
-    src: "https://mirrors.rpmfusion.org/free/el/rpmfusion-free-release-{{ ansible_distribution_major_version }}.noarch.rpm"
-  - name: rpmfusion-nonfree
-    gpg_key: "/usr/share/distribution-gpg-keys/rpmfusion/RPM-GPG-KEY-rpmfusion-nonfree-el-{{ ansible_distribution_major_version }}"
-    src: "https://mirrors.rpmfusion.org/nonfree/el/rpmfusion-nonfree-release-{{ ansible_distribution_major_version }}.noarch.rpm"
+gnome_rpmfusion_repos:
+  - name: "rpmfusion-free-updates"
+    description: "RPM Fusion for {{ gnome_rpm_fusion_target_distro }} {{ ansible_distribution_major_version }} - Free - Updates"
+    baseurl: "https://download1.rpmfusion.org/free/{{ gnome_rpm_fusion_target_distro | lower }}/updates/{{ ansible_distribution_major_version }}/$basearch/"
+    enabled: true
+    gpgcheck: true
+    gpgkey: "https://download1.rpmfusion.org/free/{{ gnome_rpm_fusion_target_distro | lower }}/RPM-GPG-KEY-rpmfusion-free-{{ gnome_rpm_fusion_target_distro | lower }}-{{ ansible_distribution_major_version }}"
+    priority: 99
+    timeout: 3
+    skip_if_unavailable: false
+  - name: rpmfusion-nonfree-updates
+    description: "RPM Fusion for {{ gnome_rpm_fusion_target_distro }} {{ ansible_distribution_major_version }} - Nonfree - Updates"
+    baseurl: "https://download1.rpmfusion.org/nonfree/{{ gnome_rpm_fusion_target_distro | lower }}/updates/{{ ansible_distribution_major_version }}/$basearch/"
+    enabled: true
+    gpgcheck: true
+    gpgkey: "https://download1.rpmfusion.org/nonfree/{{ gnome_rpm_fusion_target_distro | lower }}/RPM-GPG-KEY-rpmfusion-nonfree-{{ gnome_rpm_fusion_target_distro | lower }}-{{ ansible_distribution_major_version }}"
+    priority: 99
+    timeout: 3
+    skip_if_unavailable: false
 
-gedit_plugins:
-  Debian:
-    - gedit-plugin-terminal
-    - gedit-plugin-draw-spaces
-    - gedit-plugin-text-size
-    # - gedit-plugin-find-in-files  # INFO package missing for debian 12
-    - gedit-plugin-bracket-completion
-    - gedit-plugin-bookmarks
-  RedHat:
-    - gedit-plugin-terminal
-    - gedit-plugin-drawspaces
-    - gedit-plugin-textsize
-    - gedit-plugin-findinfiles
-    - gedit-plugin-bracketcompletion
-    - gedit-plugin-bookmarks
+gnome_gedit_plugins: ['gedit-plugins']
 
 gnome_packages:
   "default": &gnome_pkgs_default
@@ -62,7 +61,7 @@ gnome_packages:
     - gnome-control-center
     - nautilus-nextcloud
 
-obsolete_packages:
+gnome_obsolete_packages:
   "default": &osbolete_pkgs_default
     - gnome-tour
     - gnome-shell-extension-background-logo
@@ -84,6 +83,7 @@ gdm_config_file:
   "CentOS": "/etc/gdm/custom.conf"
   "AlmaLinux": "/etc/gdm/custom.conf"
   "Rocky": "/etc/gdm/custom.conf"
+  "Fedora": "/etc/gdm/custom.conf"
   "Ubuntu": "/etc/gdm3/custom.conf"
   "Debian": "/etc/gdm3/daemon.conf"
 
@@ -97,6 +97,7 @@ gdm_user_name:
   "CentOS": "gdm"
   "AlmaLinux": "gdm"
   "Rocky": "gdm"
+  "Fedora": "gdm"
   "Ubuntu": "gdm"
   "Debian": "Debian-gdm"
 gdm_monitor_config_sys_path:

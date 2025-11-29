@@ -4,7 +4,7 @@
   ansible.builtin.package_facts:
 
 - name: Get repos on rhel based systems
-  when: ansible_os_family == "RedHat"
+  when: ansible_distribution in gnome_rhel_derivatives
   block:
     - name: Get enabled repos
       ansible.builtin.shell:
@@ -29,7 +29,7 @@
         - rpmfusion-nonfree-updates
 
 - name: Test installed requirements
-  loop: "{{ dependencies[ansible_os_family] }}"
+  loop: "{{ gnome_dependencies[ansible_os_family] }}"
   ansible.builtin.assert:
     that:
       - item in ansible_facts.packages
@@ -45,7 +45,7 @@
     quiet: true
 
 - name: Test removed gnome packages
-  loop: "{{ obsolete_packages[ansible_os_family] | flatten(1) }}"
+  loop: "{{ gnome_obsolete_packages[ansible_os_family] | flatten(1) }}"
   ansible.builtin.assert:
     that:
       - item not in ansible_facts.packages
@@ -68,17 +68,20 @@
     fail_msg: "Failed to find {{ flatpak }} in installed flatpaks"
     quiet: true
 
-- name: Check if /dev/mapper/almalinux-home exists
-  ansible.builtin.stat:
-    path: /dev/mapper/almalinux-home
-  register: home_mapper
+- name: Test almalinux home mapper setup
+  when: ansible_distribution | lower == "almalinux"
+  block:
+    - name: Check if /dev/mapper/almalinux-home exists
+      ansible.builtin.stat:
+        path: /dev/mapper/almalinux-home
+      register: home_mapper
 
-- name: Verify that the /home entry contains the required options
-  when: home_mapper.stat.exists
-  ansible.builtin.command: "grep -E '^/dev/mapper/almalinux-home' /etc/fstab"
-  register: fstab_check
-  failed_when: "'x-gvfs-show' not in fstab_check.stdout or 'x-gvfs-name=Home' not in fstab_check.stdout"
-  changed_when: false
+    - name: Verify that the /home entry contains the required options
+      when: home_mapper.stat.exists
+      ansible.builtin.command: "grep -E '^/dev/mapper/almalinux-home' /etc/fstab"
+      register: fstab_check
+      failed_when: "'x-gvfs-show' not in fstab_check.stdout or 'x-gvfs-name=Home' not in fstab_check.stdout"
+      changed_when: false
 
 - name: Get current target
   ansible.builtin.stat:
@@ -99,7 +102,15 @@
   register: gdm_config
   changed_when: false
 
+- name: Check for Xorg presence
+  become: true
+  ansible.builtin.command:
+    cmd: Xorg -version
+  changed_when: false
+  register: xorg_result
+
 - name: Assert X11 is set
+  when: xorg_result.rc == 0
   ansible.builtin.assert:
     that:
       - "'WaylandEnable=false' in gdm_config.stdout_lines"

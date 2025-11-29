@@ -28,35 +28,42 @@ Additionally, this role includes a full vagrant based molecule testing setup for
 
 ```code
 📦 gnome_setup
- ┣ 📂 defaults
- ┃ ┗ 📂 main
- ┃   ┣ 📜 common.yml
- ┃   ┣ 📜 extensions.yml
- ┃   ┗ 📜 themes.yml
- ┣ 📂 handlers
- ┃ ┗ 📜 main.yml
- ┣ 📂 meta
- ┃ ┗ 📜 main.yml
+ ┣ 📂defaults
+ ┃ ┗ 📂main
+ ┃   ┣ 📜common.yml
+ ┃   ┣ 📜extensions.yml
+ ┃   ┗ 📜themes.yml
+ ┣ 📂handlers
+ ┃ ┗ 📜main.yml
+ ┣ 📂meta
+ ┃ ┗ 📜main.yml
  ┣ 📂 molecule
  ┃ ┗ 📂 default
  ┃   ┗ 📜, 📜, 📜, scenario_files
- ┣ 📂 tasks
- ┃ ┣ 📜 absent.yml
- ┃ ┣ 📜 dependencies.yml
- ┃ ┣ 📜 install_extensions.yml
- ┃ ┣ 📜 install_themes.yml
- ┃ ┣ 📜 main.yml
- ┃ ┣ 📜 present_extensions.yml
- ┃ ┣ 📜 present_finalize.yml
- ┃ ┣ 📜 present_setup.yml
- ┃ ┣ 📜 present_themes.yml
- ┃ ┣ 📜 present.yml
- ┃ ┗ 📜 tests.yml
- ┣ 📂 templates
- ┃ ┗ 📜 monitors.xml.j2
- ┣ 📂 vars
- ┃ ┗ 📜 main.yml
- ┗ 📜 README.md
+ ┣ 📂tasks
+ ┃ ┣ 📜absent.yml
+ ┃ ┣ 📜almalinux_home_mapper.yml
+ ┃ ┣ 📜common_dependencies.yml
+ ┃ ┣ 📜custom_apps.yml
+ ┃ ┣ 📜debian_repos.yml
+ ┃ ┣ 📜gnome_desktop_settings.yml
+ ┃ ┣ 📜gnome_extensions.yml
+ ┃ ┣ 📜gnome_setup.yml
+ ┃ ┣ 📜gnome_themes.yml
+ ┃ ┣ 📜install_extensions.yml
+ ┃ ┣ 📜install_themes.yml
+ ┃ ┣ 📜main.yml
+ ┃ ┣ 📜present.yml
+ ┃ ┣ 📜redhat_repos.yml
+ ┃ ┗ 📜tests.yml
+ ┣ 📂templates
+ ┃ ┗ 📜monitors.xml.j2
+ ┣ 📂vars
+ ┃ ┗ 📜main.yml
+ ┣ 📜.gitignore
+ ┣ 📜.gitmodules
+ ┣ 📜README.md
+ ┗ 📜requirements.yml
 
 ```
 
@@ -82,11 +89,11 @@ The following packages are required but will also be installed by the role autom
 
 ## Role Variables
 
-* defaults/main/common.yml
-  * install_dir: Custom install directory
-  * additional_rhel_repos: Extra repositories for RedHat based distros like CentOSStream9, AlmaLinux, Rocky, ...
+* `defaults/main/common.yml`
+  * `install_dir`: Custom install directory
+  * gnome_rpmfusion_repos: Extra repositories for RedHat based distros like CentOSStream9, AlmaLinux, Rocky, ...
   * gnome_packages: Gnome default package lists per distribution
-  * obsolete_packages: Gnome default packages to remove from base install
+  * gnome_obsolete_packages: Gnome default packages to remove from base install
   * gdm_config_file: Path to gdm configuration file per distribution
 * defaults/main/extensions.yml
   * extension_path_system: directories gnome extensions should be installed in

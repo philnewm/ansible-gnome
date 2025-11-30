@@ -70,6 +70,9 @@ gnome_obsolete_packages:
     - gnome-software-plugin-snap
     - gnome-startup-applications
     - byobu
+    - malcontent-control
+    - mal-content-tools
+    - malcontent-pam
   "RedHat":
     - *osbolete_pkgs_default
     - gnome-remote-desktop

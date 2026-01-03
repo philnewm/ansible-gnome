@@ -15,6 +15,8 @@
     name: "{{ item }}"
     state: present
 
+# TODO install fitting nvidia flatpack package `flatpak install org.freedesktop.Platform.GL.nvidia-<version>`
+
 - name: Remove obsolete Gnome packages
   become: true
   loop: "{{ gnome_obsolete_packages[ansible_os_family] | flatten(1) }}"

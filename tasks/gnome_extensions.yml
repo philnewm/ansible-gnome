@@ -41,6 +41,13 @@
     dest: /usr/bin/gnome-shell-extension-installer
     mode: '0755'
 
+- name: Ensure `dbus-send` is available (dep. of extension-installer)
+  become: true
+  when: ansible_facts.os_family | lower == "redhat"
+  ansible.builtin.dnf:
+    name: dbus-tools
+    state: present
+
 - name: Install extensions
   loop: "{{ gnome_extensions }}"
   loop_control:

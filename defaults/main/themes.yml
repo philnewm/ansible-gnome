@@ -1,5 +1,10 @@
 ---
 
+gnome_gtk_theme_src: "https://github.com/vinceliuice/Lavanda-gtk-theme/archive/refs/tags/2024-04-28.zip"
+gnome_icon_theme_src: "https://github.com/vinceliuice/Tela-circle-icon-theme/archive/refs/tags/2025-02-10.zip"
+gnome_cursor_theme_src: "https://github.com/vinceliuice/Qogir-icon-theme/archive/refs/tags/2025-02-15.zip"
+gnome_wallpaper_src: "https://github.com/philnewm/gnome-dynamic-wallpapers/archive/refs/heads/main.zip"
+
 themes_path: "/usr/share/themes"
 icons_path: "/usr/share/icons"
 wallpapers_path: "/usr/share/backgrounds"
@@ -18,25 +23,25 @@ gnome_themes:
       "Debian":
         - gtk2-engines-murrine
         - sassc
-    repo_url: "https://github.com/vinceliuice/Lavanda-gtk-theme/archive/refs/tags/2024-04-28.zip"
+    repo_url: "{{ gnome_gtk_theme_src }}"
     installer: "install.sh"
-    install_cmd: "./install.sh --dest {{ themes_path }} --color dark --icon {{ ansible_distribution | lower }} --libadwaita"
+    install_cmd: "./install.sh --dest {{ themes_path }} --color dark --icon {{ ansible_facts.distribution | lower }} --libadwaita"
     download_dir: "Lavanda-gtk-theme/"
     install_dir: "Lavanda-gtk-theme-2024-04-28/"
   - name: "Tela-circle-purple-dark"
-    repo_url: "https://github.com/vinceliuice/Tela-circle-icon-theme/archive/refs/tags/2025-02-10.zip"
+    repo_url: "{{ gnome_icon_theme_src }}"
     installer: "install.sh"
     install_cmd: "./install.sh -d {{ icons_path }} -c purple"
     download_dir: "Tela-circle-icon-theme/"
     install_dir: "Tela-circle-icon-theme-2025-02-10/"
   - name: "Qogir-cursors"
-    repo_url: "https://github.com/vinceliuice/Qogir-icon-theme/archive/refs/tags/2025-02-15.zip"
+    repo_url: "{{ gnome_cursor_theme_src }}"
     installer: "install.sh"
     install_cmd: "./install.sh"
     download_dir: "Qogir-icon-theme-2025-02-15/"
     install_dir: "Qogir-icon-theme-2025-02-15/src/cursors/"
   - name: "dynamic_wallpapers"
-    repo_url: "https://github.com/philnewm/gnome-dynamic-wallpapers/archive/refs/heads/main.zip"
+    repo_url: "{{ gnome_wallpaper_src }}"
     installer: "install.sh"
     install_cmd: "./install.sh"
     download_dir: "gnome-dynamic-wallpapers/"

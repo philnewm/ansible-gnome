@@ -8,6 +8,8 @@
 
 - name: Add the flathub flatpak repository remote
   become: true
+  environment:
+    GPG_USE_KEYBOXD: "0"
   community.general.flatpak_remote:
     name: flathub
     state: present

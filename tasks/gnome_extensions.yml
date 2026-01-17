@@ -74,9 +74,22 @@
     path: "{{ extension_path_system }}/{{ item }}/metadata.json"
     mode: "0644"
 
-- name: Enable installed extensions
-  community.general.dconf:
-    key: "/org/gnome/shell/enabled-extensions"
+- name: Ensure default gnome settings directory exists
+  become: true
+  ansible.builtin.file:
+    path: "/etc/dconf/db/local.d"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Configure GNOME Shell extensions system-wide
+  become: true
+  community.general.ini_file:
+    path: /etc/dconf/db/local.d/00-gnome-shell
+    section: org/gnome/shell
+    option: enabled-extensions
     value: "{{ extensions | to_json }}"
+    mode: "0644"
 
 ...

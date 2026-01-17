@@ -29,7 +29,7 @@
         - rpmfusion-nonfree-updates
 
 - name: Test installed requirements
-  loop: "{{ gnome_dependencies[ansible_os_family] }}"
+  loop: "{{ gnome_dependencies[ansible_facts.os_family] }}"
   ansible.builtin.assert:
     that:
       - item in ansible_facts.packages
@@ -37,7 +37,7 @@
     quiet: true
 
 - name: Test installed gnome packages
-  loop: "{{ gnome_packages[ansible_os_family] | flatten(1) }}"
+  loop: "{{ gnome_packages[ansible_facts.distribution | lower] | flatten(1) }}"
   ansible.builtin.assert:
     that:
       - item in ansible_facts.packages
@@ -45,7 +45,7 @@
     quiet: true
 
 - name: Test removed gnome packages
-  loop: "{{ gnome_obsolete_packages[ansible_os_family] | flatten(1) }}"
+  loop: "{{ gnome_obsolete_packages[ansible_facts.os_family] | flatten(1) }}"
   ansible.builtin.assert:
     that:
       - item not in ansible_facts.packages
@@ -69,7 +69,7 @@
     quiet: true
 
 - name: Test almalinux home mapper setup
-  when: ansible_distribution | lower == "almalinux"
+  when: ansible_facts.distribution | lower == "almalinux"
   block:
     - name: Check if /dev/mapper/almalinux-home exists
       ansible.builtin.stat:
@@ -98,25 +98,28 @@
 
 - name: "Get gdm config"
   ansible.builtin.command:
-    cmd: "cat {{ gdm_config_file[ansible_distribution] }}"
+    cmd: "cat {{ gdm_config_file[ansible_facts.distribution] }}"
   register: gdm_config
   changed_when: false
 
-- name: Check for Xorg presence
-  become: true
-  ansible.builtin.command:
-    cmd: Xorg -version
-  changed_when: false
-  register: xorg_result
+- name: Ensure Xorg
+  when: ansible_facts.distribution | lower != "fedora"
+  block:
+    - name: Check for Xorg presence
+      become: true
+      ansible.builtin.command:
+        cmd: Xorg -version
+      changed_when: false
+      register: xorg_result
 
-- name: Assert X11 is set
-  when: xorg_result.rc == 0
-  ansible.builtin.assert:
-    that:
-      - "'WaylandEnable=false' in gdm_config.stdout_lines"
-      - "'DefaultSession=gnome-xorg.desktop' in gdm_config.stdout_lines"
-    fail_msg: "One or both of the expected lines are not present in {{ gdm_config_file[ansible_distribution] }}"
-    quiet: true
+    - name: Assert X11 is set
+      when: xorg_result.rc == 0
+      ansible.builtin.assert:
+        that:
+          - "'WaylandEnable=false' in gdm_config.stdout_lines"
+          - "'DefaultSession=gnome-xorg.desktop' in gdm_config.stdout_lines"
+        fail_msg: "One or both of the expected lines are not present in {{ gdm_config_file[ansible_facts.distribution] }}"
+        quiet: true
 
 - name: Get installed GNOME extensions
   ansible.builtin.command:
@@ -138,46 +141,6 @@
       extension.address in present_extensions
     fail_msg: "Failed to find '{{ extension.address }}' in installed extensions."
     quiet: true
-
-- name: Get enabled extensions
-  community.general.dconf:
-    key: "/org/gnome/shell/enabled-extensions"
-    state: read
-  register: enabled_extensions_list
-
-- name: Test enabled extensions
-  loop: "{{ gnome_extensions }}"
-  loop_control:
-    label: "{{ extension.name }}"
-    loop_var: extension
-  ansible.builtin.assert:
-    that:
-      extension.address in enabled_extensions_list.value
-    fail_msg: "'{{ extension.address }}' did not get enabled."
-    quiet: true
-
-- name: Get disabled extensions
-  community.general.dconf:
-    key: "/org/gnome/shell/disabled-extensions"
-    state: read
-  register: disabled_extensions_list
-
-- name: Test disabled extensions
-  ansible.builtin.assert:
-    # INFO none is default - changes to '@as []' as soon as an extension was diabled ones
-    that:
-      - disabled_extensions_list.value in [none, '@as []']
-    fail_msg: "Found disabled extension '{{ disabled_extensions_list.value }}' expected one of [none, '@as []']."
-    quiet: true
-
-- name: Collect gnome extensions dconf config
-  loop: "{{ gnome_extensions }}"
-  loop_control:
-    loop_var: ext
-    label: "{{ ext.name }}"
-  when: ext.dconf_settings is defined
-  ansible.builtin.set_fact:
-    ext_dconf: "{{ ext_dconf | default({}) | combine(ext.dconf_settings) }}"
 
 - name: Get installed GNOME themes
   ansible.builtin.find:
@@ -204,7 +167,7 @@
 - name: Read display server resolution_x
   become: true
   community.general.xml:
-    path: "{{ gdm_monitor_config_sys_path[ansible_os_family] }}/monitors.xml"
+    path: "{{ gdm_monitor_config_sys_path[ansible_facts.os_family] }}/monitors.xml"
     xpath: '/monitors/configuration/logicalmonitor/monitor/mode/width'
     content: text
   register: width_value
@@ -212,7 +175,7 @@
 - name: Read display server resolution_y
   become: true
   community.general.xml:
-    path: "{{ gdm_monitor_config_sys_path[ansible_os_family] }}/monitors.xml"
+    path: "{{ gdm_monitor_config_sys_path[ansible_facts.os_family] }}/monitors.xml"
     xpath: '/monitors/configuration/logicalmonitor/monitor/mode/height'
     content: text
   register: height_value

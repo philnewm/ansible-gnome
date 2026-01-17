@@ -1,3 +1,4 @@
 .vscode
 boot_analysis_*.svg
 .ansible
+.venv

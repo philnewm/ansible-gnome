@@ -65,6 +65,12 @@
         name: "*"
         state: absent
 
+    - name: Remove flathub flatpak repository remote
+      become: true
+      community.general.flatpak_remote:
+        name: flathub
+        state: absent
+
     - name: Remove flatpak packages dnf5
       become: true
       when: ansible_facts.distribution | lower == "fedora"
@@ -75,11 +81,6 @@
         state: absent
         autoremove: true
 
-    - name: Remove flathub flatpak repository remote
-      become: true
-      community.general.flatpak_remote:
-        name: flathub
-        state: absent
 
     - name: Remove Flatpak
       become: true

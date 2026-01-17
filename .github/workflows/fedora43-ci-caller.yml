@@ -1,6 +1,6 @@
 ---
 
-name: Rocky9
+name: Fedora43
 
 on:
   push:
@@ -25,6 +25,6 @@ jobs:
   ci:
     uses: philnewm/ansible-role-repo-control/.github/workflows/molecule-ci-podman.yml@main
     with:
-      scenario_name: rocky9
+      scenario_name: fedora
 
 ...

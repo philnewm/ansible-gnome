@@ -9,20 +9,20 @@ gnome_rpm_fusion_target_distro: "EL"
 
 gnome_rpmfusion_repos:
   - name: "rpmfusion-free-updates"
-    description: "RPM Fusion for {{ gnome_rpm_fusion_target_distro }} {{ ansible_distribution_major_version }} - Free - Updates"
-    baseurl: "https://download1.rpmfusion.org/free/{{ gnome_rpm_fusion_target_distro | lower }}/updates/{{ ansible_distribution_major_version }}/$basearch/"
+    description: "RPM Fusion for {{ gnome_rpm_fusion_target_distro }} {{ ansible_facts.distribution_major_version }} - Free - Updates"
+    baseurl: "https://download1.rpmfusion.org/free/{{ gnome_rpm_fusion_target_distro | lower }}/updates/{{ ansible_facts.distribution_major_version }}/$basearch/"
     enabled: true
     gpgcheck: true
-    gpgkey: "https://download1.rpmfusion.org/free/{{ gnome_rpm_fusion_target_distro | lower }}/RPM-GPG-KEY-rpmfusion-free-{{ gnome_rpm_fusion_target_distro | lower }}-{{ ansible_distribution_major_version }}"
+    gpgkey: "https://download1.rpmfusion.org/free/{{ gnome_rpm_fusion_target_distro | lower }}/RPM-GPG-KEY-rpmfusion-free-{{ gnome_rpm_fusion_target_distro | lower }}-{{ ansible_facts.distribution_major_version }}"
     priority: 99
     timeout: 3
     skip_if_unavailable: false
   - name: rpmfusion-nonfree-updates
-    description: "RPM Fusion for {{ gnome_rpm_fusion_target_distro }} {{ ansible_distribution_major_version }} - Nonfree - Updates"
-    baseurl: "https://download1.rpmfusion.org/nonfree/{{ gnome_rpm_fusion_target_distro | lower }}/updates/{{ ansible_distribution_major_version }}/$basearch/"
+    description: "RPM Fusion for {{ gnome_rpm_fusion_target_distro }} {{ ansible_facts.distribution_major_version }} - Nonfree - Updates"
+    baseurl: "https://download1.rpmfusion.org/nonfree/{{ gnome_rpm_fusion_target_distro | lower }}/updates/{{ ansible_facts.distribution_major_version }}/$basearch/"
     enabled: true
     gpgcheck: true
-    gpgkey: "https://download1.rpmfusion.org/nonfree/{{ gnome_rpm_fusion_target_distro | lower }}/RPM-GPG-KEY-rpmfusion-nonfree-{{ gnome_rpm_fusion_target_distro | lower }}-{{ ansible_distribution_major_version }}"
+    gpgkey: "https://download1.rpmfusion.org/nonfree/{{ gnome_rpm_fusion_target_distro | lower }}/RPM-GPG-KEY-rpmfusion-nonfree-{{ gnome_rpm_fusion_target_distro | lower }}-{{ ansible_facts.distribution_major_version }}"
     priority: 99
     timeout: 3
     skip_if_unavailable: false
@@ -30,7 +30,7 @@ gnome_rpmfusion_repos:
 gnome_gedit_plugins: ['gedit-plugins']
 
 gnome_packages:
-  "default": &gnome_pkgs_default
+  default: &gnome_pkgs_default
     - gnome-shell
     - gnome-themes-extra # includes Adwaita-dark
     - gnome-terminal
@@ -43,21 +43,30 @@ gnome_packages:
     - gnome-calculator
     - gnome-tweaks
     - gnome-user-docs
-    - gnome-photos
     - gnome-font-viewer
     - gnome-characters
-    - gnome-devel-docs
     - gnome-disk-utility
     - baobab
     - meld
-  "RedHat":
+  redhat: &gnome_pkgs_redhat
     - *gnome_pkgs_default
     - gvfs-smb
     - gvfs-fuse
     - gnome-extensions-app
     - gnome-control-center-filesystem
     - nextcloud-client-nautilus
-  "Debian":
+    - gnome-photos
+  centos: *gnome_pkgs_redhat
+  almalinux: *gnome_pkgs_redhat
+  rocky: *gnome_pkgs_redhat
+  fedora: *gnome_pkgs_redhat
+  debian:
+    - *gnome_pkgs_default
+    - gnome-shell-extension-prefs
+    - gnome-control-center
+    - nautilus-nextcloud
+    - gnome-photos
+  ubuntu:
     - *gnome_pkgs_default
     - gnome-shell-extension-prefs
     - gnome-control-center

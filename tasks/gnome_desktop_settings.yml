@@ -21,7 +21,7 @@
   become: true
   when: xorg_result.rc == 0
   ansible.builtin.lineinfile:
-    path: "{{ gdm_config_file[ansible_distribution] }}"
+    path: "{{ gdm_config_file[ansible_facts.distribution] }}"
     backrefs: true
     regexp: '^#WaylandEnable=false$'
     line: 'WaylandEnable=false\nDefaultSession=gnome-xorg.desktop'

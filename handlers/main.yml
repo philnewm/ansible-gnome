@@ -2,7 +2,9 @@
 
 - name: Reboot Host
   become: true
-  when: gnome_enable_reboot
+  when:
+    - gnome_enable_reboot
+    - ansible_facts.virtualization_type not in ["docker", "podman", "lxc", "containerd", "container"]
   ansible.builtin.reboot:
     msg: "Reboot initiated by Ansible"
 

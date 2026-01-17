@@ -1,18 +1,11 @@
 ---
 
-- name: Install debian specific package_facts dependency
-  become: true
-  when: ansible_distribution == "Debian"
-  ansible.builtin.package:
-    name: python-apt-common
-    state: present
-
 - name: Gather package facts
   ansible.builtin.package_facts:
 
 - name: Include os_family specific dependencies
   ansible.builtin.include_tasks:
-    file: "{{ ansible_os_family | lower }}_repos.yml"
+    file: "{{ ansible_facts.os_family | lower }}_repos.yml"
 
 - name: Include common dependencies
   ansible.builtin.include_tasks:

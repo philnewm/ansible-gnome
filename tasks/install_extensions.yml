@@ -10,7 +10,7 @@
 - name: Install extension dependencies
   become: true
   when: extension.dependencies is defined
-  loop: "{{ extension.dependencies[ansible_os_family] }}"
+  loop: "{{ extension.dependencies[ansible_facts.os_family] }}"
   ansible.builtin.package:
     name: "{{ item }}"
     state: present

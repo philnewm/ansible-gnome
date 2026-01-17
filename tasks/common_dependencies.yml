@@ -1,6 +1,6 @@
 ---
 
-- name: Install Flatpak
+- name: Install flatpak
   become: true
   ansible.builtin.package:
     name: flatpak
@@ -15,36 +15,89 @@
 
 - name: Remove filters from flathub
   become: true
-  when: ansible_distribution == "Fedora"
+  when: ansible_facts.distribution | lower == "fedora"
   ansible.builtin.command:
     cmd: flatpak remote-modify --no-filter flathub
   changed_when: false
 
 - name: Install global gnome dependencies
   become: true
-  loop: "{{ gnome_dependencies[ansible_os_family] }}"
+  loop: "{{ gnome_dependencies[ansible_facts.os_family] }}"
   when: item not in ansible_facts.packages
   ansible.builtin.package:
     name: "{{ item }}"
     state: present
 
-- name: Get current system locale
-  ansible.builtin.shell:
-    cmd: |
-      set -o pipefail
-      localectl status | awk '/LANG/{print $3}' | cut -d'=' -f2
-  args:
-    executable: /bin/bash
-  register: current_locale
-  changed_when: false
+- name: Ensure locals on debian based systems
+  when: ansible_facts.os_family | lower == "debian"
+  block:
+    - name: Ensure locales package is installed
+      become: true
+      ansible.builtin.package:
+        name: locales
+        state: present
 
-# INFO alma9 box missing default locals -> extension system-monitor fails to activate if locals are missing
-- name: "Set system locale to {{ system_local_lang }}"
-  when: current_locale.stdout != system_local_lang
-  become: true
-  ansible.builtin.command:
-    cmd: "localectl set-locale {{ system_local_lang }}"
-  register: set_locale_result
-  changed_when: set_locale_result.rc == 0
+    - name: Enable en_US.UTF-8 locale
+      become: true
+      ansible.builtin.lineinfile:
+        path: /etc/locale.gen
+        regexp: '^#?\s*en_US\.UTF-8 UTF-8'
+        line: 'en_US.UTF-8 UTF-8'
+
+    - name: Generate locales
+      become: true
+      ansible.builtin.command:
+        cmd: locale-gen
+      changed_when: false
+
+    - name: Set system locale
+      become: true
+      ansible.builtin.copy:
+        dest: /etc/default/locale
+        content: |
+          LANG=en_US.UTF-8
+          LC_ALL=en_US.UTF-8
+        owner: root
+        group: root
+        mode: "0644"
+
+- name: Ensure locals on debian based systems
+  when: ansible_facts.os_family | lower == "redhat"
+  block:
+    - name: Ensure local on redhat based systems
+      become: true
+      ansible.builtin.dnf:
+        name: glibc-langpack-en
+        state: present
+
+    - name: Set system locale
+      become: true
+      ansible.builtin.copy:
+        dest: /etc/locale.conf
+        content: |
+          LANG=en_US.UTF-8
+          LC_ALL=en_US.UTF-8
+        owner: root
+        group: root
+        mode: "0644"
+
+# - name: Get current system locale
+#   ansible.builtin.shell:
+#     cmd: |
+#       set -o pipefail
+#       localectl status | awk '/LANG/{print $3}' | cut -d'=' -f2
+#   args:
+#     executable: /bin/bash
+#   register: current_locale
+#   changed_when: false
+
+# # Note almalinu9 missing default locals -> extension system-monitor fails to activate if locals are missing
+# - name: "Set system locale to {{ system_local_lang }}"
+#   when: current_locale.stdout != system_local_lang
+#   become: true
+#   ansible.builtin.command:
+#     cmd: "localectl set-locale {{ system_local_lang }}"  # en_US.UTF-8
+#   register: set_locale_result
+#   changed_when: set_locale_result.rc == 0
 
 ...

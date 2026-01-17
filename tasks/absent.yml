@@ -1,46 +1,58 @@
 ---
 
-- name: Get installed GNOME themes
-  ansible.builtin.find:
-    paths: "{{ theme_paths }}"
-    file_type: "any"
-    depth: 1
-  register: theme_dirs
+# - name: Get installed GNOME themes
+#   ansible.builtin.find:
+#     paths: "{{ theme_paths }}"
+#     file_type: "any"
+#     depth: 1
+#   register: theme_dirs
 
-- name: Set themes list (excluding 'hicolor')
-  ansible.builtin.set_fact:
-    themes: >-
-      {{ theme_dirs.files
-        | map(attribute='path')
-        | map('basename')
-        | reject('equalto', 'hicolor')
-        | list }}
+# - name: Set themes list (excluding 'hicolor')
+#   ansible.builtin.set_fact:
+#     themes: >-
+#       {{ theme_dirs.files
+#         | map(attribute='path')
+#         | map('basename')
+#         | reject('equalto', 'hicolor')
+#         | list }}
 
-- name: Remove themes
+# - name: Remove themes
+#   become: true
+#   loop: "{{ themes }}"
+#   when: "'hicolor' not in item"
+#   ansible.builtin.file:
+#     path: "{{ item }}"
+#     state: absent
+
+# - name: Remove manual installed extensions
+#   become: true
+#   ansible.builtin.file:
+#     path: "{{ extension_path_system }}"
+#     state: absent
+
+# - name: Set default target to multi-user
+#   become: true
+#   ansible.builtin.file:
+#     src: /usr/lib/systemd/system/multi-user.target
+#     dest: /etc/systemd/system/default.target
+#     state: link
+#   notify: Reboot Host
+
+- name: Remove Gnome packages dnf5
   become: true
-  loop: "{{ themes }}"
-  when: "'hicolor' not in item"
-  ansible.builtin.file:
-    path: "{{ item }}"
+  when: ansible_facts.distribution | lower == "fedora"
+  ansible.builtin.dnf:
+    name:
+      - gnome-shell
+      - gdm
+      - gnome-session-wayland-session
     state: absent
+    autoremove: true
 
-- name: Remove manual installed extensions
+- name: Remove flatpak packages
   become: true
-  ansible.builtin.file:
-    path: "{{ extension_path_system }}"
-    state: absent
-
-- name: Set default target to multi-user
-  become: true
-  ansible.builtin.file:
-    src: /usr/lib/systemd/system/multi-user.target
-    dest: /etc/systemd/system/default.target
-    state: link
-  notify: Reboot Host
-
-- name: Remove Gnome packages
-  loop: "{{ gnome_packages[ansible_os_family] }}"
-  become: true
+  loop: "{{ gnome_packages[ansible_facts.distribution | lower] | reverse }}"
+  when: ansible_facts.distribution | lower != "fedora"
   ansible.builtin.package:
     name: "{{ item }}"
     state: absent
@@ -52,6 +64,16 @@
       community.general.flatpak:
         name: "*"
         state: absent
+
+    - name: Remove flatpak packages dnf5
+      become: true
+      when: ansible_facts.distribution | lower == "fedora"
+      ansible.builtin.dnf:
+        name:
+          - gnome-software
+          - flatpak
+        state: absent
+        autoremove: true
 
     - name: Remove flathub flatpak repository remote
       become: true

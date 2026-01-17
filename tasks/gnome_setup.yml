@@ -1,8 +1,8 @@
 ---
 
-- name: Install Gnome packages
+- name: Install gnome packages
   when: item not in ansible_facts.packages
-  loop: "{{ (gnome_packages[ansible_os_family] + gnome_gedit_plugins) | flatten(1) }}"  # gedit_plugins[ansible_os_family]) | flatten(1)
+  loop: "{{ (gnome_packages[ansible_facts.distribution | lower] + gnome_gedit_plugins) | flatten(1) }}"
   become: true
   ansible.builtin.package:
     name: "{{ item }}"
@@ -17,34 +17,34 @@
 
 # TODO install fitting nvidia flatpack package `flatpak install org.freedesktop.Platform.GL.nvidia-<version>`
 
-- name: Remove obsolete Gnome packages
+- name: Remove obsolete gnome packages
   become: true
-  loop: "{{ gnome_obsolete_packages[ansible_os_family] | flatten(1) }}"
+  loop: "{{ gnome_obsolete_packages[ansible_facts.os_family] | flatten(1) }}"
   ansible.builtin.package:
     name: "{{ item }}"
     state: absent
 
 - name: Adjust almalinux home mapper for disk analyzer usage
-  when: ansible_distribution | lower == "almalinux"
+  when: ansible_facts.distribution | lower == "almalinux"
   ansible.builtin.include_tasks:
     file: almalinux_home_mapper.yml
 
 - name: Create system default resolution path
   become: true
   ansible.builtin.file:
-    path: "{{ gdm_monitor_config_sys_path[ansible_os_family] }}"
+    path: "{{ gdm_monitor_config_sys_path[ansible_facts.os_family] }}"
     state: directory
     mode: "0700"
-    owner: "{{ gdm_user_name[ansible_distribution] }}"
-    group: "{{ gdm_user_name[ansible_distribution] }}"
+    owner: "{{ gdm_user_name[ansible_facts.distribution] }}"
+    group: "{{ gdm_user_name[ansible_facts.distribution] }}"
 
 - name: Set system default resolution
   become: true
   ansible.builtin.template:
     src: monitors.xml.j2
-    dest: "{{ gdm_monitor_config_sys_path[ansible_os_family] }}/monitors.xml"
+    dest: "{{ gdm_monitor_config_sys_path[ansible_facts.os_family] }}/monitors.xml"
     mode: "0644"
-    owner: "{{ gdm_user_name[ansible_distribution] }}"
-    group: "{{ gdm_user_name[ansible_distribution] }}"
+    owner: "{{ gdm_user_name[ansible_facts.distribution] }}"
+    group: "{{ gdm_user_name[ansible_facts.distribution] }}"
 
 ...

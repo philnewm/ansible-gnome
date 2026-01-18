@@ -7,6 +7,10 @@
   ansible.builtin.package:
     name: "{{ item }}"
     state: present
+  register: package_install_result
+  retries: 3
+  delay: 2
+  until: package_install_result is succeeded
 
 - name: Install system-wide flatpaks
   become: true
@@ -14,6 +18,10 @@
   community.general.flatpak:
     name: "{{ item }}"
     state: present
+  register: flatpak_install_result
+  retries: 3
+  delay: 2
+  until: flatpak_install_result is succeeded
 
 # TODO install fitting nvidia flatpack package `flatpak install org.freedesktop.Platform.GL.nvidia-<version>`
 
@@ -23,6 +31,148 @@
   ansible.builtin.package:
     name: "{{ item }}"
     state: absent
+
+- name: Gather package facts
+  ansible.builtin.package_facts:
+
+- name: Get Gnome version
+  become: true
+  ansible.builtin.shell:
+    cmd: |
+      set -o pipefail
+      gnome-shell --version | awk '{print $3}' | cut -d'.' -f1
+  args:
+    executable: /bin/bash
+  register: gnome_major_version_result
+  changed_when: false
+
+- name: Set gnome major version
+  become: true
+  ansible.builtin.set_fact:
+    gnome_major_version: "{{ gnome_major_version_result.stdout }}"
+
+- name: Configure system-wide gnome defaults
+  become: true
+  loop: "{{ gnome_base_settings.get(gnome_major_version, gnome_base_settings[gnome_settings_fallback]) | dict2items }}"
+  loop_control:
+    label: "{{ dconf_pair.key }}"
+    loop_var: dconf_pair
+  community.general.ini_file:
+    path: "{{ gnome_systemwide_default_base }}"
+    section: "{{ dconf_pair.key | dirname }}"
+    option: "{{ dconf_pair.key | basename }}"
+    value: "{{ dconf_pair.value | string }}"
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Update dconf
+
+- name: Configure system-wide nautilus defaults
+  become: true
+  loop: "{{ gnome_nautilus_settings.get(gnome_major_version, gnome_nautilus_settings[gnome_settings_fallback]) | dict2items }}"
+  loop_control:
+    label: "{{ dconf_pair.key }}"
+    loop_var: dconf_pair
+  when: "'nautilus' in ansible_facts.packages"
+  community.general.ini_file:
+    path: "{{ gnome_systemwide_default_nautilus }}"
+    section: "{{ dconf_pair.key | dirname }}"
+    option: "{{ dconf_pair.key | basename }}"
+    value: "{{ dconf_pair.value | string }}"
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Update dconf
+
+- name: Configure gnome-terminal defaults
+  when: "'gnome-terminal' in ansible_facts.packages"
+  block:
+    - name: Configure system-wide terminal defaults
+      become: true
+      loop: "{{ gnome_terminal_settings | dict2items }}"
+      loop_control:
+        label: "{{ dconf_pair.key }}"
+        loop_var: dconf_pair
+      community.general.ini_file:
+        path: "{{ gnome_systemwide_default_terminal }}"
+        section: "{{ dconf_pair.key | dirname }}"
+        option: "{{ dconf_pair.key | basename }}"
+        value: "{{ dconf_pair.value | string }}"
+        owner: root
+        group: root
+        mode: "0644"
+      notify: Update dconf
+
+    - name: Configure system-wide terminal default profile
+      become: true
+      loop: "{{ gnome_terminal_profile_settings | dict2items }}"
+      loop_control:
+        label: "{{ dconf_pair.key }}"
+        loop_var: dconf_pair
+      when: "'gnome-terminal' in ansible_facts.packages"
+      community.general.ini_file:
+        path: "{{ gnome_systemwide_default_terminal }}"
+        section: "{{ gnome_terminal_profile_path }}"
+        option: "{{ dconf_pair.key | basename }}"
+        value: "{{ dconf_pair.value | string }}"
+        owner: root
+        group: root
+        mode: "0644"
+      notify: Update dconf
+
+- name: Configure gedit defaults
+  when: "'gedit' in ansible_facts.packages"
+  block:
+    - name: Create gedit user theme directory
+      become: true
+      ansible.builtin.file:
+        path: "{{ gedit_system_theme_path }}"
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
+
+    - name: Copy gedit theme
+      become: true
+      ansible.builtin.copy:
+        src: "lavanda.xml"
+        dest: "{{ gedit_system_theme_path }}/lavanda.xml"
+        owner: root
+        group: root
+        mode: "0644"
+
+    - name: Configure system-wide gedit defaults
+      become: true
+      loop: "{{ gnome_gedit_settings | dict2items }}"
+      loop_control:
+        label: "{{ dconf_pair.key }}"
+        loop_var: dconf_pair
+      community.general.ini_file:
+        path: "{{ gnome_systemwide_default_gedit }}"
+        section: "{{ dconf_pair.key | dirname }}"
+        option: "{{ dconf_pair.key | basename }}"
+        value: "{{ dconf_pair.value | string }}"
+        owner: root
+        group: root
+        mode: "0644"
+      notify: Update dconf
+
+- name: Configure system-wide meld defaults
+  become: true
+  loop: "{{ gnome_meld_settings | dict2items }}"
+  loop_control:
+    label: "{{ dconf_pair.key }}"
+    loop_var: dconf_pair
+  when: "'meld' in ansible_facts.packages"
+  community.general.ini_file:
+    path: "{{ gnome_systemwide_default_meld }}"
+    section: "{{ dconf_pair.key | dirname }}"
+    option: "{{ dconf_pair.key | basename }}"
+    value: "{{ dconf_pair.value | string }}"
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Update dconf
 
 - name: Adjust almalinux home mapper for disk analyzer usage
   when: ansible_facts.distribution | lower == "almalinux"

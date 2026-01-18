@@ -9,7 +9,7 @@
     group: root
     mode: "0755"
 
-- name: Get installed GNOME extensions
+- name: Get installed gnome extensions
   ansible.builtin.command:
     cmd: "ls {{ extension_path_system }}"
   register: extensions_list_result
@@ -57,7 +57,7 @@
   ansible.builtin.include_tasks:
     file: install_extensions.yml
 
-- name: Get installed GNOME extensions
+- name: Get installed gnome extensions
   ansible.builtin.command:
     cmd: "ls {{ extension_path_system }}"
   register: extensions_list_result
@@ -83,13 +83,40 @@
     group: root
     mode: "0755"
 
-- name: Configure GNOME Shell extensions system-wide
+- name: Enable gnome shell extensions by default system-wide
   become: true
   community.general.ini_file:
-    path: /etc/dconf/db/local.d/00-gnome-shell
+    path: "{{ gnome_systemwide_default_base }}"
     section: org/gnome/shell
     option: enabled-extensions
     value: "{{ extensions | to_json }}"
     mode: "0644"
+
+- name: Combine gnome extension dconf settings
+  ansible.builtin.set_fact:
+    gnome_extension_dconf_settings: >-
+      {{
+        gnome_extensions
+        | selectattr('dconf_settings', 'defined')
+        | map(attribute='dconf_settings')
+        | list
+        | ansible.builtin.combine
+      }}
+
+- name: Configure system-wide theme defaults
+  become: true
+  loop: "{{ gnome_extension_dconf_settings | dict2items }}"
+  loop_control:
+    label: "{{ dconf_pair.key }}"
+    loop_var: dconf_pair
+  community.general.ini_file:
+    path: "{{ gnome_systemwide_extensions_default_dconf }}"
+    section: "{{ dconf_pair.key | dirname }}"
+    option: "{{ dconf_pair.key | basename }}"
+    value: "{{ dconf_pair.value | string }}"
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Update dconf
 
 ...

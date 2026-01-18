@@ -20,4 +20,31 @@
   ansible.builtin.include_tasks:
     file: install_themes.yml
 
+- name: Combine gnome theme dconf settings
+  ansible.builtin.set_fact:
+    gnome_theme_dconf_settings: >-
+      {{
+        gnome_extensions
+        | selectattr('dconf_settings', 'defined')
+        | map(attribute='dconf_settings')
+        | list
+        | ansible.builtin.combine
+      }}
+
+- name: Configure system-wide theme defaults
+  become: true
+  loop: "{{ gnome_theme_dconf_settings | dict2items }}"
+  loop_control:
+    label: "{{ dconf_pair.key }}"
+    loop_var: dconf_pair
+  community.general.ini_file:
+    path: "{{ gnome_systemwide_default_themes }}"
+    section: "{{ dconf_pair.key | dirname }}"
+    option: "{{ dconf_pair.key | basename }}"
+    value: "{{ dconf_pair.value | string }}"
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Update dconf
+
 ...

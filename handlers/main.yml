@@ -1,5 +1,12 @@
 ---
 
+- name: Update dconf
+  become: true
+  ansible.builtin.command:
+    cmd: "dconf update"
+  register: dconf_update_result
+  changed_when: dconf_update_result.rc == 0
+
 - name: Reboot Host
   become: true
   when:

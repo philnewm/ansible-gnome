@@ -4,8 +4,11 @@
   become: true
   ansible.builtin.command:
     cmd: "gnome-shell-extension-installer {{ extension.id }} --yes"
-  register: result
-  changed_when: result.rc == 0
+  register: extension_install_result
+  changed_when: extension_install_result.rc == 0
+  retries: 3
+  delay: 2
+  until: extension_install_result is succeeded
 
 - name: Install extension dependencies
   become: true
@@ -14,5 +17,9 @@
   ansible.builtin.package:
     name: "{{ item }}"
     state: present
+  register: extension_dependency_install_result
+  retries: 3
+  delay: 2
+  until: extension_dependency_install_result is succeeded
 
 ...

@@ -16,14 +16,16 @@
     dest: "{{ install_dir }}/"
     remote_src: true
   register: download_result
+  retries: 3
+  delay: 2
   until: download_result is succeeded
-  retries: 5
-  delay: 10
 
 - name: Update installer permissions
   become: true
   ansible.builtin.file:
     path: "{{ (install_dir, theme.install_dir, theme.installer) | ansible.builtin.path_join }}"
+    owner: root
+    group: root
     mode: "0755"
 
 - name: Install theme dependencies

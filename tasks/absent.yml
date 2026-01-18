@@ -1,42 +1,48 @@
 ---
 
-# - name: Get installed GNOME themes
-#   ansible.builtin.find:
-#     paths: "{{ theme_paths }}"
-#     file_type: "any"
-#     depth: 1
-#   register: theme_dirs
+- name: Get installed GNOME themes
+  ansible.builtin.find:
+    paths: "{{ theme_paths }}"
+    file_type: "any"
+    depth: 1
+  register: theme_dirs
 
-# - name: Set themes list (excluding 'hicolor')
-#   ansible.builtin.set_fact:
-#     themes: >-
-#       {{ theme_dirs.files
-#         | map(attribute='path')
-#         | map('basename')
-#         | reject('equalto', 'hicolor')
-#         | list }}
+- name: Set themes list (excluding 'hicolor')
+  ansible.builtin.set_fact:
+    themes: >-
+      {{ theme_dirs.files
+        | map(attribute='path')
+        | map('basename')
+        | reject('equalto', 'hicolor')
+        | list }}
 
-# - name: Remove themes
-#   become: true
-#   loop: "{{ themes }}"
-#   when: "'hicolor' not in item"
-#   ansible.builtin.file:
-#     path: "{{ item }}"
-#     state: absent
+- name: Remove themes
+  become: true
+  loop: "{{ themes }}"
+  when: "'hicolor' not in item"
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
 
-# - name: Remove manual installed extensions
-#   become: true
-#   ansible.builtin.file:
-#     path: "{{ extension_path_system }}"
-#     state: absent
+- name: Remove manual installed extensions
+  become: true
+  ansible.builtin.file:
+    path: "{{ extension_path_system }}"
+    state: absent
 
-# - name: Set default target to multi-user
-#   become: true
-#   ansible.builtin.file:
-#     src: /usr/lib/systemd/system/multi-user.target
-#     dest: /etc/systemd/system/default.target
-#     state: link
-#   notify: Reboot Host
+- name: Remove system-wide default settings
+  become: true
+  ansible.builtin.file:
+    path: "/etc/dconf/db/local.d/"
+    state: absent
+
+- name: Set default target to multi-user
+  become: true
+  ansible.builtin.file:
+    src: /usr/lib/systemd/system/multi-user.target
+    dest: /etc/systemd/system/default.target
+    state: link
+  notify: Reboot Host
 
 - name: Remove Gnome packages dnf5
   become: true

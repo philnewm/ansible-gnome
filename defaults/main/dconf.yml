@@ -21,6 +21,17 @@ gnome_base_settings:
     "org/gnome/desktop/wm/preferences/button-layout": "'close,maximize,minimize:appmenu'"
     "org/gnome/software/download-updates": "false"
     "org/gnome/software/first-run": "false"
+    "org/gnome/shell/favorite-apps": "['org.gnome.Nautilus.desktop', 'org.gnome.Terminal.desktop', 'firefox.desktop']"
+    "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings": "['/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/nautilus/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/terminal/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/mission_center/']"
+    "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/nautilus/name": "'nautilus'"
+    "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/nautilus/command": "'nautilus'"
+    "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/nautilus/binding": "'<Super>e'"
+    "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/terminal/name": "'terminal'"
+    "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/terminal/command": "'terminal'"
+    "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/terminal/binding": "'<Super>t'"
+    "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/mission_center/name": "'mission_center'"
+    "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/mission_center/command": "'flatpak run io.missioncenter.MissionCenter'"
+    "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/mission_center/binding": "'<Primary><Shift>Escape'"
   "40":
     # Note obsolete if custom theme gets set
     # "/org/gnome/desktop/interface/gtk-theme": "'Adwaita-dark'"

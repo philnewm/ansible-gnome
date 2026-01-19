@@ -31,8 +31,10 @@
   ansible.builtin.package:
     name: "{{ item }}"
     state: absent
+  register: package_uninstall_result
 
 - name: Gather package facts
+  when: package_install_result.changed or package_uninstall_result.changed
   ansible.builtin.package_facts:
 
 - name: Get Gnome version

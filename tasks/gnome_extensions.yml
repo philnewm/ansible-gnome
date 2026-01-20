@@ -103,7 +103,7 @@
         | ansible.builtin.combine
       }}
 
-- name: Configure system-wide theme defaults
+- name: Configure system-wide extension defaults
   become: true
   loop: "{{ gnome_extension_dconf_settings | dict2items }}"
   loop_control:

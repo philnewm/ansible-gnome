@@ -8,12 +8,14 @@ gnome_wallpaper_src: "https://github.com/philnewm/gnome-dynamic-wallpapers/archi
 themes_path: "/usr/share/themes"
 icons_path: "/usr/share/icons"
 wallpapers_path: "/usr/share/backgrounds"
+gnome_systemwide_default_themes: "/etc/dconf/db/local.d/30-gnome-themes"
 
 theme_paths:
   - "{{ themes_path }}"
   - "{{ icons_path }}"
   - "{{ wallpapers_path }}"
 
+# Note "name" value needs to be equal to directory name
 gnome_themes:
   - name: "Lavanda-Dark"
     dependencies:
@@ -28,23 +30,34 @@ gnome_themes:
     install_cmd: "./install.sh --dest {{ themes_path }} --color dark --icon {{ ansible_facts.distribution | lower }} --libadwaita"
     download_dir: "Lavanda-gtk-theme/"
     install_dir: "Lavanda-gtk-theme-2024-04-28/"
+    dconf_settings:
+      "org/gnome/desktop/interface/gtk-theme": "'Lavanda-Dark'"
+      "org/gnome/shell/extensions/user-theme/name": "'Lavanda-Dark'"
   - name: "Tela-circle-purple-dark"
     repo_url: "{{ gnome_icon_theme_src }}"
     installer: "install.sh"
     install_cmd: "./install.sh -d {{ icons_path }} -c purple"
     download_dir: "Tela-circle-icon-theme/"
     install_dir: "Tela-circle-icon-theme-2025-02-10/"
+    dconf_settings:
+      "org/gnome/desktop/interface/icon-theme": "'Tela-circle-purple-dark'"
   - name: "Qogir-cursors"
     repo_url: "{{ gnome_cursor_theme_src }}"
     installer: "install.sh"
     install_cmd: "./install.sh"
     download_dir: "Qogir-icon-theme-2025-02-15/"
     install_dir: "Qogir-icon-theme-2025-02-15/src/cursors/"
+    dconf_settings:
+      "org/gnome/desktop/interface/cursor-theme": "'Qogir-cursors'"
   - name: "dynamic_wallpapers"
     repo_url: "{{ gnome_wallpaper_src }}"
     installer: "install.sh"
     install_cmd: "./install.sh"
     download_dir: "gnome-dynamic-wallpapers/"
     install_dir: "gnome-dynamic-wallpapers-main/"
+    dconf_settings:
+      "org/gnome/desktop/background/picture-options": "'zoom'"
+      "org/gnome/desktop/background/picture-uri": "'file:///usr/share/backgrounds/dynamic_wallpapers/BigSur.xml'"
+      "org/gnome/desktop/background/picture-uri-dark": "'file:///usr/share/backgrounds/dynamic_wallpapers/BigSur.xml'"
 
 ...

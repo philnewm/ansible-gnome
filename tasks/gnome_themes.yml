@@ -24,7 +24,7 @@
   ansible.builtin.set_fact:
     gnome_theme_dconf_settings: >-
       {{
-        gnome_extensions
+        gnome_themes
         | selectattr('dconf_settings', 'defined')
         | map(attribute='dconf_settings')
         | list
@@ -38,7 +38,7 @@
     label: "{{ dconf_pair.key }}"
     loop_var: dconf_pair
   community.general.ini_file:
-    path: "{{ gnome_systemwide_default_themes }}"
+    path: "{{ gnome_systemwide_themes_default_dconf }}"
     section: "{{ dconf_pair.key | dirname }}"
     option: "{{ dconf_pair.key | basename }}"
     value: "{{ dconf_pair.value | string }}"

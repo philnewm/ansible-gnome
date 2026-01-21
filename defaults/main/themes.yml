@@ -8,8 +8,7 @@ gnome_wallpaper_src: "https://github.com/philnewm/gnome-dynamic-wallpapers/archi
 themes_path: "/usr/share/themes"
 icons_path: "/usr/share/icons"
 wallpapers_path: "/usr/share/backgrounds"
-gnome_systemwide_default_themes: "/etc/dconf/db/local.d/30-gnome-themes"
-
+gnome_systemwide_themes_default_dconf: "/etc/dconf/db/local.d/30-gnome-themes"
 theme_paths:
   - "{{ themes_path }}"
   - "{{ icons_path }}"

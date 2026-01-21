@@ -47,6 +47,7 @@ gnome_base_settings:
     "org/gnome/desktop/privacy/recent-files-max-age": "30"
     "org/gnome/desktop/privacy/remove-old-temp-files": "true"
     "org/gnome/desktop/privacy/remove-old-trash-files": "true"
+    "org/gnome/desktop/interface/accent-color": "'purple'"
   "47":
     <<: *43
   "49":

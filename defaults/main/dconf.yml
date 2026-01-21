@@ -27,7 +27,7 @@ gnome_base_settings:
     "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/nautilus/command": "'nautilus'"
     "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/nautilus/binding": "'<Super>e'"
     "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/terminal/name": "'terminal'"
-    "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/terminal/command": "'terminal'"
+    "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/terminal/command": "'gnome-terminal'"
     "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/terminal/binding": "'<Super>t'"
     "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/mission_center/name": "'mission_center'"
     "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/mission_center/command": "'flatpak run io.missioncenter.MissionCenter'"

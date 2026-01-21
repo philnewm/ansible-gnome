@@ -1,5 +1,19 @@
 ---
 
+- name: Install gnome-shell on fedora using dnf4
+  when:
+    - "'gnome-shell' not in ansible_facts.packages"
+    - ansible_facts.distribution | lower == 'fedora'
+  become: true
+  ansible.builtin.dnf:
+    name: "gnome-shell"
+    state: present
+    use_backend: dnf4
+  register: gnomeshell_install_result
+  retries: 3
+  delay: 2
+  until: gnomeshell_install_result is succeeded
+
 - name: Install gnome packages
   when: item not in ansible_facts.packages
   loop: "{{ (gnome_packages[ansible_facts.distribution | lower] + gnome_gedit_plugins) | flatten(1) }}"

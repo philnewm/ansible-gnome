@@ -7,32 +7,12 @@ gnome_enable_reboot: true
 headless_mode: false
 gnome_rpm_fusion_target_distro: "EL"
 
-gnome_rpmfusion_repos:
-  - name: "rpmfusion-free-updates"
-    description: "RPM Fusion for {{ gnome_rpm_fusion_target_distro }} {{ ansible_facts.distribution_major_version }} - Free - Updates"
-    baseurl: "https://download1.rpmfusion.org/free/{{ gnome_rpm_fusion_target_distro | lower }}/updates/{{ ansible_facts.distribution_major_version }}/$basearch/"
-    enabled: true
-    gpgcheck: true
-    gpgkey: "https://download1.rpmfusion.org/free/{{ gnome_rpm_fusion_target_distro | lower }}/RPM-GPG-KEY-rpmfusion-free-{{ gnome_rpm_fusion_target_distro | lower }}-{{ ansible_facts.distribution_major_version }}"
-    priority: 99
-    timeout: 3
-    skip_if_unavailable: false
-  - name: rpmfusion-nonfree-updates
-    description: "RPM Fusion for {{ gnome_rpm_fusion_target_distro }} {{ ansible_facts.distribution_major_version }} - Nonfree - Updates"
-    baseurl: "https://download1.rpmfusion.org/nonfree/{{ gnome_rpm_fusion_target_distro | lower }}/updates/{{ ansible_facts.distribution_major_version }}/$basearch/"
-    enabled: true
-    gpgcheck: true
-    gpgkey: "https://download1.rpmfusion.org/nonfree/{{ gnome_rpm_fusion_target_distro | lower }}/RPM-GPG-KEY-rpmfusion-nonfree-{{ gnome_rpm_fusion_target_distro | lower }}-{{ ansible_facts.distribution_major_version }}"
-    priority: 99
-    timeout: 3
-    skip_if_unavailable: false
-
 gnome_gedit_plugins: ['gedit-plugins']
 
 gnome_packages:
   default: &gnome_pkgs_default
     - gnome-shell
-    - gnome-themes-extra # includes Adwaita-dark
+    - gnome-themes-extra # Note includes Adwaita-dark
     - gnome-terminal
     - gnome-calendar
     - gnome-system-monitor
@@ -86,7 +66,7 @@ gnome_obsolete_packages:
     - *osbolete_pkgs_default
     - gnome-remote-desktop
   "Debian":
-    # INFO gnome-remote-desktop is a part of gnome-control-center package
+    # Note gnome-remote-desktop is a part of gnome-control-center package
     - *osbolete_pkgs_default
 
 flatpaks:

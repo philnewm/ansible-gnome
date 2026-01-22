@@ -15,36 +15,6 @@
         name: epel-release
         state: present
 
-    - name: Set up repos
-      become: true
-      loop: "{{ gnome_rpmfusion_repos }}"
-      loop_control:
-        loop_var: repo
-        label: "{{ repo.name }}"
-      ansible.builtin.yum_repository:
-        name: "{{ repo.name }}"
-        description: "{{ repo.description }}"
-        baseurl: "{{ repo.baseurl }}"
-        priority: "{{ repo.priority }}"
-        timeout: "{{ repo.timeout }}"
-        enabled: "{{ repo.enabled | default(true) }}"
-        gpgcheck: "{{ repo.enabled }}"
-        gpgkey: "{{ repo.gpgkey }}"
-        metadata_expire: "{{ repo.metadata_expire | default(21600) }}"
-        skip_if_unavailable: "{{ repo.skip_if_unavailable | default(false) }}"
-        mode: "0644"
-        owner: "root"
-        state: present
-      register: dnf_repo_setup
-
-    - name: Clean dnf cache
-      become: true
-      when: dnf_repo_setup.changed
-      ansible.builtin.command:
-        cmd: dnf clean all
-      register: dnf_clean_result
-      changed_when: dnf_clean_result.rc == 0
-
 - name: Update dnf metadata cache
   become: true
   ansible.builtin.dnf:

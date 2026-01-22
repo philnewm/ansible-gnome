@@ -49,7 +49,6 @@ Additionally, this role includes a full vagrant based molecule testing setup for
  ┃ ┣ 📜absent.yml
  ┃ ┣ 📜almalinux_home_mapper.yml
  ┃ ┣ 📜common_dependencies.yml
- ┃ ┣ 📜custom_apps.yml
  ┃ ┣ 📜debian_repos.yml
  ┃ ┣ 📜gnome_desktop_settings.yml
  ┃ ┣ 📜gnome_extensions.yml
@@ -96,7 +95,6 @@ The following packages are required but will also be installed by the role autom
 
 * `defaults/main/common.yml`
   * `install_dir`: Custom install directory
-  * gnome_rpmfusion_repos: Extra repositories for RedHat based distros like CentOSStream9, AlmaLinux, Rocky, ...
   * gnome_packages: Gnome default package lists per distribution
   * gnome_obsolete_packages: Gnome default packages to remove from base install
   * gdm_config_file: Path to gdm configuration file per distribution

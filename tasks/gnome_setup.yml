@@ -148,18 +148,40 @@
         group: root
         mode: "0755"
 
+    - name: Check for gtksourceview  # noqa: command-instead-of-module
+      ansible.builtin.command:
+        cmd: "rpm -q --qf '%{VERSION}\n' libgedit-gtksourceview"
+      register: libgedit_gtksourceview_result
+      changed_when: false
+      failed_when: false
+
+    - name: Ovwerwrite theme path
+      when: libgedit_gtksourceview_result.rc == 0
+      ansible.builtin.set_fact:
+        gedit_custom_theme_src_file: "lavanda_gtkview.xml"
+        gedit_system_theme_path: "/usr/share/libgedit-gtksourceview-300/styles"
+
     - name: Copy gedit theme
       become: true
       ansible.builtin.copy:
-        src: "lavanda.xml"
+        src: "{{ gedit_custom_theme_src_file }}"
         dest: "{{ gedit_system_theme_path }}/lavanda.xml"
         owner: root
         group: root
         mode: "0644"
 
+    - name: Get gedit version
+      ansible.builtin.shell:
+        cmd: |
+          set -o pipefail
+          gedit --version | awk '{print $NF}' | cut -d. -f1
+        executable: /bin/bash
+      changed_when: false
+      register: gedit_version_result
+
     - name: Configure system-wide gedit defaults
       become: true
-      loop: "{{ gnome_gedit_settings | dict2items }}"
+      loop: "{{ gnome_gedit_settings.get(gedit_version_result.stdout, gnome_gedit_settings[gedit_version_fallback]) | dict2items }}"
       loop_control:
         label: "{{ dconf_pair.key }}"
         loop_var: dconf_pair

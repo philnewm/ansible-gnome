@@ -31,9 +31,8 @@
 - name: Install theme dependencies
   become: true
   when: theme.dependencies is defined
-  loop: "{{ theme.dependencies[ansible_facts.os_family] }}"
   ansible.builtin.package:
-    name: "{{ item }}"
+    name: "{{ theme.dependencies[ansible_facts.os_family] }}"
     state: present
 
 - name: "Install theme"

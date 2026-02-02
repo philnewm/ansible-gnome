@@ -28,10 +28,10 @@
 
 - name: Install extension-installer dependencies
   become: true
-  loop: "{{ extension_installer_dependencies }}"
-  when: item not in ansible_facts.packages
+  # loop: "{{ extension_installer_dependencies }}"
+  # when: item not in ansible_facts.packages
   ansible.builtin.package:
-    name: "{{ item }}"
+    name: "{{ extension_installer_dependencies }}"
     state: present
 
 - name: Download extension installer

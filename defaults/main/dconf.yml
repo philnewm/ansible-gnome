@@ -1,3 +1,4 @@
+gnome_system_wide_config: true
 gnome_systemwide_default_base: "/etc/dconf/db/local.d/00-gnome-base"
 gnome_settings_fallback: "43"
 gnome_base_settings:

@@ -15,11 +15,9 @@
   until: gnomeshell_install_result is succeeded
 
 - name: Install gnome packages
-  when: item not in ansible_facts.packages
-  loop: "{{ (gnome_packages[ansible_facts.distribution | lower] + gnome_gedit_plugins) | flatten(1) }}"
   become: true
   ansible.builtin.package:
-    name: "{{ item }}"
+    name: "{{ (gnome_packages[ansible_facts.distribution | lower] + gnome_gedit_plugins) | flatten(1) }}"
     state: present
   register: package_install_result
   retries: 3
@@ -28,9 +26,8 @@
 
 - name: Install system-wide flatpaks
   become: true
-  loop: "{{ flatpaks }}"
   community.general.flatpak:
-    name: "{{ item }}"
+    name: "{{ flatpaks }}"
     state: present
   register: flatpak_install_result
   retries: 3
@@ -41,9 +38,8 @@
 
 - name: Remove obsolete gnome packages
   become: true
-  loop: "{{ gnome_obsolete_packages[ansible_facts.os_family] | flatten(1) }}"
   ansible.builtin.package:
-    name: "{{ item }}"
+    name: "{{ gnome_obsolete_packages[ansible_facts.os_family] | flatten(1) }}"
     state: absent
   register: package_uninstall_result
 
@@ -67,150 +63,10 @@
   ansible.builtin.set_fact:
     gnome_major_version: "{{ gnome_major_version_result.stdout }}"
 
-- name: Configure system-wide gnome defaults
-  become: true
-  loop: "{{ gnome_base_settings.get(gnome_major_version, gnome_base_settings[gnome_settings_fallback]) | dict2items }}"
-  loop_control:
-    label: "{{ dconf_pair.key }}"
-    loop_var: dconf_pair
-  community.general.ini_file:
-    path: "{{ gnome_systemwide_default_base }}"
-    section: "{{ dconf_pair.key | dirname }}"
-    option: "{{ dconf_pair.key | basename }}"
-    value: "{{ dconf_pair.value | string }}"
-    owner: root
-    group: root
-    mode: "0644"
-  notify: Update dconf
-
-- name: Configure system-wide nautilus defaults
-  become: true
-  loop: "{{ gnome_nautilus_settings.get(gnome_major_version, gnome_nautilus_settings[gnome_settings_fallback]) | dict2items }}"
-  loop_control:
-    label: "{{ dconf_pair.key }}"
-    loop_var: dconf_pair
-  when: "'nautilus' in ansible_facts.packages"
-  community.general.ini_file:
-    path: "{{ gnome_systemwide_default_nautilus }}"
-    section: "{{ dconf_pair.key | dirname }}"
-    option: "{{ dconf_pair.key | basename }}"
-    value: "{{ dconf_pair.value | string }}"
-    owner: root
-    group: root
-    mode: "0644"
-  notify: Update dconf
-
-- name: Configure gnome-terminal defaults
-  when: "'gnome-terminal' in ansible_facts.packages"
-  block:
-    - name: Configure system-wide terminal defaults
-      become: true
-      loop: "{{ gnome_terminal_settings | dict2items }}"
-      loop_control:
-        label: "{{ dconf_pair.key }}"
-        loop_var: dconf_pair
-      community.general.ini_file:
-        path: "{{ gnome_systemwide_default_terminal }}"
-        section: "{{ dconf_pair.key | dirname }}"
-        option: "{{ dconf_pair.key | basename }}"
-        value: "{{ dconf_pair.value | string }}"
-        owner: root
-        group: root
-        mode: "0644"
-      notify: Update dconf
-
-    - name: Configure system-wide terminal default profile
-      become: true
-      loop: "{{ gnome_terminal_profile_settings | dict2items }}"
-      loop_control:
-        label: "{{ dconf_pair.key }}"
-        loop_var: dconf_pair
-      when: "'gnome-terminal' in ansible_facts.packages"
-      community.general.ini_file:
-        path: "{{ gnome_systemwide_default_terminal }}"
-        section: "{{ gnome_terminal_profile_path }}"
-        option: "{{ dconf_pair.key | basename }}"
-        value: "{{ dconf_pair.value | string }}"
-        owner: root
-        group: root
-        mode: "0644"
-      notify: Update dconf
-
-- name: Configure gedit defaults
-  when: "'gedit' in ansible_facts.packages"
-  block:
-    - name: Create gedit user theme directory
-      become: true
-      ansible.builtin.file:
-        path: "{{ gedit_system_theme_path }}"
-        state: directory
-        owner: root
-        group: root
-        mode: "0755"
-
-    - name: Check for gtksourceview  # noqa: command-instead-of-module
-      ansible.builtin.command:
-        cmd: "rpm -q --qf '%{VERSION}\n' libgedit-gtksourceview"
-      register: libgedit_gtksourceview_result
-      changed_when: false
-      failed_when: false
-
-    - name: Ovwerwrite theme path
-      when: libgedit_gtksourceview_result.rc == 0
-      ansible.builtin.set_fact:
-        gedit_custom_theme_src_file: "lavanda_gtkview.xml"
-        gedit_system_theme_path: "/usr/share/libgedit-gtksourceview-300/styles"
-
-    - name: Copy gedit theme
-      become: true
-      ansible.builtin.copy:
-        src: "{{ gedit_custom_theme_src_file }}"
-        dest: "{{ gedit_system_theme_path }}/lavanda.xml"
-        owner: root
-        group: root
-        mode: "0644"
-
-    - name: Get gedit version
-      ansible.builtin.shell:
-        cmd: |
-          set -o pipefail
-          gedit --version | awk '{print $NF}' | cut -d. -f1
-        executable: /bin/bash
-      changed_when: false
-      register: gedit_version_result
-
-    - name: Configure system-wide gedit defaults
-      become: true
-      loop: "{{ gnome_gedit_settings.get(gedit_version_result.stdout, gnome_gedit_settings[gedit_version_fallback]) | dict2items }}"
-      loop_control:
-        label: "{{ dconf_pair.key }}"
-        loop_var: dconf_pair
-      community.general.ini_file:
-        path: "{{ gnome_systemwide_default_gedit }}"
-        section: "{{ dconf_pair.key | dirname }}"
-        option: "{{ dconf_pair.key | basename }}"
-        value: "{{ dconf_pair.value | string }}"
-        owner: root
-        group: root
-        mode: "0644"
-      notify: Update dconf
-
-- name: Configure system-wide meld defaults
-  become: true
-  loop: "{{ gnome_meld_settings | dict2items }}"
-  loop_control:
-    label: "{{ dconf_pair.key }}"
-    loop_var: dconf_pair
-  when: "'meld' in ansible_facts.packages"
-  community.general.ini_file:
-    path: "{{ gnome_systemwide_default_meld }}"
-    section: "{{ dconf_pair.key | dirname }}"
-    option: "{{ dconf_pair.key | basename }}"
-    value: "{{ dconf_pair.value | string }}"
-    owner: root
-    group: root
-    mode: "0644"
-  notify: Update dconf
+- name: Configure gnome
+  when: gnome_system_wide_config
+  ansible.builtin.include_tasks:
+    file: configure_dconf.yml
 
 - name: Adjust almalinux home mapper for disk analyzer usage
   when: ansible_facts.distribution | lower == "almalinux"

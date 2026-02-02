@@ -22,10 +22,8 @@
 
 - name: Install global gnome dependencies
   become: true
-  loop: "{{ gnome_dependencies[ansible_facts.os_family] }}"
-  when: item not in ansible_facts.packages
   ansible.builtin.package:
-    name: "{{ item }}"
+    name: "{{ gnome_dependencies[ansible_facts.os_family] }}"
     state: present
 
 - name: Ensure locals on debian based systems
@@ -61,7 +59,7 @@
         group: root
         mode: "0644"
 
-- name: Ensure locals on debian based systems
+- name: Ensure locals on redhat based systems
   when: ansible_facts.os_family | lower == "redhat"
   block:
     - name: Ensure local on redhat based systems
@@ -80,24 +78,5 @@
         owner: root
         group: root
         mode: "0644"
-
-# - name: Get current system locale
-#   ansible.builtin.shell:
-#     cmd: |
-#       set -o pipefail
-#       localectl status | awk '/LANG/{print $3}' | cut -d'=' -f2
-#   args:
-#     executable: /bin/bash
-#   register: current_locale
-#   changed_when: false
-
-# # Note almalinu9 missing default locals -> extension system-monitor fails to activate if locals are missing
-# - name: "Set system locale to {{ system_local_lang }}"
-#   when: current_locale.stdout != system_local_lang
-#   become: true
-#   ansible.builtin.command:
-#     cmd: "localectl set-locale {{ system_local_lang }}"  # en_US.UTF-8
-#   register: set_locale_result
-#   changed_when: set_locale_result.rc == 0
 
 ...

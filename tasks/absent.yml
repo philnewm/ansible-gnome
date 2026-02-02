@@ -44,7 +44,7 @@
     state: link
   notify: Reboot Host
 
-- name: Remove Gnome packages dnf5
+- name: Remove gnome packages dnf5
   become: true
   when: ansible_facts.distribution | lower == "fedora"
   ansible.builtin.dnf:
@@ -55,12 +55,11 @@
     state: absent
     autoremove: true
 
-- name: Remove flatpak packages
+- name: Remove gnome packages
   become: true
-  loop: "{{ gnome_packages[ansible_facts.distribution | lower] | reverse }}"
   when: ansible_facts.distribution | lower != "fedora"
   ansible.builtin.package:
-    name: "{{ item }}"
+    name: "{{ gnome_packages[ansible_facts.distribution | lower] | flatten(1) }}"
     state: absent
 
 - name: Clear flatpak content

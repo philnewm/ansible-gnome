@@ -1,0 +1,26 @@
+# This file is managed by Ansible
+
+{% set sections_dict = {} %}
+{% for key, value in gnome_terminal_settings | dictsort %}
+{% set section = key | dirname %}
+{% set option = key | basename %}
+{% if section not in sections_dict %}
+{% set _ = sections_dict.update({section: {}}) %}
+{% endif %}
+{% set _ = sections_dict[section].update({option: value}) %}
+{% endfor %}
+
+{% for section, options in sections_dict | dictsort %}
+[{{ section }}]
+{% for option, value in options | dictsort %}
+{{ option }}={{ value | string }}
+{% endfor %}
+{% if not loop.last %}
+
+{% endif %}
+{% endfor %}
+
+[{{ gnome_terminal_profile_path }}]
+{% for key, value in gnome_terminal_profile_settings | dictsort %}
+{{ key }}={{ value | string }}
+{% endfor %}

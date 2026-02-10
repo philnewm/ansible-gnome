@@ -79,7 +79,7 @@
         fail_msg: "One or both of the expected lines are not present in {{ gdm_config_file[ansible_facts.distribution] }}"
         quiet: true
 
-- name: Get installed GNOME extensions
+- name: Get installed gnome extensions
   ansible.builtin.command:
     cmd: "ls {{ extension_path_system }}"
   register: extensions_list_result
@@ -100,7 +100,7 @@
     fail_msg: "Failed to find '{{ extension.address }}' in installed extensions."
     quiet: true
 
-- name: Get installed GNOME themes
+- name: Get installed gnome themes
   ansible.builtin.find:
     paths: "{{ theme_paths }}"
     file_type: directory
@@ -125,7 +125,7 @@
 - name: Read display server resolution_x
   become: true
   community.general.xml:
-    path: "{{ gdm_monitor_config_sys_path[ansible_facts.os_family] }}/monitors.xml"
+    path: "{{ gdm_monitor_config_sys_path[ansible_facts.os_family | lower] }}/monitors.xml"
     xpath: '/monitors/configuration/logicalmonitor/monitor/mode/width'
     content: text
   register: width_value
@@ -133,7 +133,7 @@
 - name: Read display server resolution_y
   become: true
   community.general.xml:
-    path: "{{ gdm_monitor_config_sys_path[ansible_facts.os_family] }}/monitors.xml"
+    path: "{{ gdm_monitor_config_sys_path[ansible_facts.os_family | lower] }}/monitors.xml"
     xpath: '/monitors/configuration/logicalmonitor/monitor/mode/height'
     content: text
   register: height_value

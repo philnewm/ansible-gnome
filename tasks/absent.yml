@@ -1,6 +1,6 @@
 ---
 
-- name: Get installed GNOME themes
+- name: Get installed gnome themes
   ansible.builtin.find:
     paths: "{{ theme_paths }}"
     file_type: "any"

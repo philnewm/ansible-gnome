@@ -1,5 +1,6 @@
 gnome_system_wide_config: true
-gnome_systemwide_default_base: "/etc/dconf/db/local.d/00-gnome-base"
+gnome_system_wide_dconf_dir: "/etc/dconf/db/local.d"
+gnome_systemwide_default_base: "{{ gnome_system_wide_dconf_dir }}/00-gnome-base"
 gnome_settings_fallback: "43"
 gnome_base_settings:
   "dconf_default": &dconf_default
@@ -55,7 +56,7 @@ gnome_base_settings:
     <<: *43
 
 # Note partly broken visible columns show no effect
-gnome_systemwide_default_nautilus: "/etc/dconf/db/local.d/10-gnome-nautilus"
+gnome_systemwide_default_nautilus: "{{ gnome_system_wide_dconf_dir }}/10-gnome-nautilus"
 gnome_nautilus_settings:
   "base_settings": &base_settings
     "org/gnome/nautilus/icon-view/captions": "['detailed_type', 'size', 'date_modified_with_time']"
@@ -100,7 +101,7 @@ gnome_nautilus_settings:
   "49":
     <<: *gtk4_settings
 
-gnome_systemwide_default_terminal: "/etc/dconf/db/local.d/10-gnome-terminal"
+gnome_systemwide_default_terminal: "{{ gnome_system_wide_dconf_dir }}/10-gnome-terminal"
 terminal_profile_uuid: "5261d7f3-37ae-43cc-90e5-2139da18c41d"
 gnome_terminal_settings:
   "org/gnome/terminal/legacy/settings/new-terminal-mode": "'tab'"
@@ -138,7 +139,7 @@ gnome_terminal_profile_settings:
   "use-theme-colors": "false"
   "use-transparent-background": "true"
 
-gnome_systemwide_default_gedit: "/etc/dconf/db/local.d/10-gnome-gedit"
+gnome_systemwide_default_gedit: "{{ gnome_system_wide_dconf_dir }}/10-gnome-gedit"
 gedit_system_theme_path: "/usr/share/gtksourceview-4/styles"
 gedit_custom_theme_src_file: "lavanda.xml"
 gedit_version_fallback: "40"
@@ -168,7 +169,7 @@ gnome_gedit_settings:
     "org/gnome/gedit/preferences/editor/style-scheme-for-light-theme-variant": "'solarized-light'"
 
 
-gnome_systemwide_default_meld: "/etc/dconf/db/local.d/10-gnome-meld"
+gnome_systemwide_default_meld: "{{ gnome_system_wide_dconf_dir }}/10-gnome-meld"
 gnome_meld_settings:
   "org/gnome/meld/enable-space-drawer": "true"
   "org/gnome/meld/highlight-current-line": "true"

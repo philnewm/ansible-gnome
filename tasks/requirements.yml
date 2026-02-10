@@ -1,0 +1,69 @@
+---
+
+- name: Install gnome-shell on fedora using dnf4
+  when:
+    - "'gnome-shell' not in ansible_facts.packages"
+    - ansible_facts.distribution | lower == 'fedora'
+  become: true
+  ansible.builtin.dnf:
+    name: "gnome-shell"
+    state: present
+    use_backend: dnf4
+  register: gnomeshell_install_result
+  retries: 3
+  delay: 2
+  until: gnomeshell_install_result is succeeded
+
+- name: Install gnome packages
+  become: true
+  ansible.builtin.package:
+    name: "{{ (gnome_packages[ansible_facts.distribution | lower] + gnome_gedit_plugins + gnome_dependencies[ansible_facts.os_family]) | flatten(1) }}"
+    state: present
+  register: package_install_result
+  retries: 3
+  delay: 2
+  until: package_install_result is succeeded
+
+- name: Remove obsolete gnome packages
+  become: true
+  ansible.builtin.package:
+    name: "{{ gnome_obsolete_packages[ansible_facts.os_family] | flatten(1) }}"
+    state: absent
+  register: package_uninstall_result
+
+- name: Gather package facts
+  when: package_install_result.changed or package_uninstall_result.changed
+  ansible.builtin.package_facts:
+
+- name: Install flatpak
+  become: true
+  ansible.builtin.package:
+    name: flatpak
+    state: present
+
+- name: Add the flathub flatpak repository remote
+  become: true
+  community.general.flatpak_remote:
+    name: flathub
+    state: present
+    flatpakrepo_url: https://dl.flathub.org/repo/flathub.flatpakrepo
+
+- name: Remove filters from flathub
+  become: true
+  when: ansible_facts.distribution | lower == "fedora"
+  ansible.builtin.command:
+    cmd: flatpak remote-modify --no-filter flathub
+  changed_when: false
+
+# TODO install fitting nvidia flatpack package `flatpak install org.freedesktop.Platform.GL.nvidia-<version>`
+- name: Install system-wide flatpaks
+  become: true
+  community.general.flatpak:
+    name: "{{ flatpaks }}"
+    state: present
+  register: flatpak_install_result
+  retries: 3
+  delay: 2
+  until: flatpak_install_result is succeeded
+
+...

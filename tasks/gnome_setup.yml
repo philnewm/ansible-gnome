@@ -1,72 +1,57 @@
 ---
 
-- name: Install gnome-shell on fedora using dnf4
-  when:
-    - "'gnome-shell' not in ansible_facts.packages"
-    - ansible_facts.distribution | lower == 'fedora'
-  become: true
-  ansible.builtin.dnf:
-    name: "gnome-shell"
-    state: present
-    use_backend: dnf4
-  register: gnomeshell_install_result
-  retries: 3
-  delay: 2
-  until: gnomeshell_install_result is succeeded
+- name: Ensure locals on debian based systems
+  when: ansible_facts.os_family | lower == "debian"
+  block:
+    - name: Ensure locales package is installed
+      become: true
+      ansible.builtin.package:
+        name: locales
+        state: present
 
-- name: Install gnome packages
-  become: true
-  ansible.builtin.package:
-    name: "{{ (gnome_packages[ansible_facts.distribution | lower] + gnome_gedit_plugins) | flatten(1) }}"
-    state: present
-  register: package_install_result
-  retries: 3
-  delay: 2
-  until: package_install_result is succeeded
+    - name: Enable en_US.UTF-8 locale
+      become: true
+      ansible.builtin.lineinfile:
+        path: /etc/locale.gen
+        regexp: '^#?\s*en_US\.UTF-8 UTF-8'
+        line: 'en_US.UTF-8 UTF-8'
 
-- name: Install system-wide flatpaks
-  become: true
-  community.general.flatpak:
-    name: "{{ flatpaks }}"
-    state: present
-  register: flatpak_install_result
-  retries: 3
-  delay: 2
-  until: flatpak_install_result is succeeded
+    - name: Generate locales
+      become: true
+      ansible.builtin.command:
+        cmd: locale-gen
+      changed_when: false
 
-# TODO install fitting nvidia flatpack package `flatpak install org.freedesktop.Platform.GL.nvidia-<version>`
+    - name: Set system locale
+      become: true
+      ansible.builtin.copy:
+        dest: /etc/default/locale
+        content: |
+          LANG=en_US.UTF-8
+          LC_ALL=en_US.UTF-8
+        owner: root
+        group: root
+        mode: "0644"
 
-- name: Remove obsolete gnome packages
-  become: true
-  ansible.builtin.package:
-    name: "{{ gnome_obsolete_packages[ansible_facts.os_family] | flatten(1) }}"
-    state: absent
-  register: package_uninstall_result
+- name: Ensure locals on redhat based systems
+  when: ansible_facts.os_family | lower == "redhat"
+  block:
+    - name: Ensure local on redhat based systems
+      become: true
+      ansible.builtin.dnf:
+        name: glibc-langpack-en
+        state: present
 
-- name: Gather package facts
-  when: package_install_result.changed or package_uninstall_result.changed
-  ansible.builtin.package_facts:
-
-- name: Get Gnome version
-  become: true
-  ansible.builtin.shell:
-    cmd: |
-      set -o pipefail
-      gnome-shell --version | awk '{print $3}' | cut -d'.' -f1
-  args:
-    executable: /bin/bash
-  register: gnome_major_version_result
-  changed_when: false
-
-- name: Set gnome major version
-  become: true
-  ansible.builtin.set_fact:
-    gnome_major_version: "{{ gnome_major_version_result.stdout }}"
-
-- name: Configure gnome
-  when: gnome_system_wide_config
-  ansible.builtin.include_tasks:
-    file: configure_dconf.yml
+    - name: Set system locale
+      become: true
+      ansible.builtin.copy:
+        dest: /etc/locale.conf
+        content: |
+          LANG=en_US.UTF-8
+          LC_ALL=en_US.UTF-8
+        owner: root
+        group: root
+        mode: "0644"
 
 - name: Adjust almalinux home mapper for disk analyzer usage
   when: ansible_facts.distribution | lower == "almalinux"
@@ -76,19 +61,28 @@
 - name: Create system default resolution path
   become: true
   ansible.builtin.file:
-    path: "{{ gdm_monitor_config_sys_path[ansible_facts.os_family] }}"
+    path: "{{ gdm_monitor_config_sys_path[ansible_facts.os_family | lower] }}"
     state: directory
     mode: "0700"
-    owner: "{{ gdm_user_name[ansible_facts.distribution] }}"
-    group: "{{ gdm_user_name[ansible_facts.distribution] }}"
+    owner: "{{ gdm_user_name[ansible_facts.distribution | lower] }}"
+    group: "{{ gdm_user_name[ansible_facts.distribution | lower] }}"
 
 - name: Set system default resolution
   become: true
   ansible.builtin.template:
     src: monitors.xml.j2
-    dest: "{{ gdm_monitor_config_sys_path[ansible_facts.os_family] }}/monitors.xml"
+    dest: "{{ gdm_monitor_config_sys_path[ansible_facts.os_family | lower] }}/monitors.xml"
     mode: "0644"
-    owner: "{{ gdm_user_name[ansible_facts.distribution] }}"
-    group: "{{ gdm_user_name[ansible_facts.distribution] }}"
+    owner: "{{ gdm_user_name[ansible_facts.distribution | lower] }}"
+    group: "{{ gdm_user_name[ansible_facts.distribution | lower] }}"
+
+- name: Ensure config directory exists
+  become: true
+  ansible.builtin.file:
+    path: "{{ gnome_system_wide_dconf_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
 
 ...

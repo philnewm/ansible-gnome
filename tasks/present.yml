@@ -9,7 +9,7 @@
 
 - name: Include common dependencies
   ansible.builtin.include_tasks:
-    file: common_dependencies.yml
+    file: requirements.yml
 
 - name: Include gnome base setup
   ansible.builtin.include_tasks:
@@ -22,6 +22,10 @@
 - name: Include gnome themes
   ansible.builtin.include_tasks:
     file: gnome_themes.yml
+
+- name: Include gnome dconf config
+  ansible.builtin.include_tasks:
+    file: dconf_config.yml
 
 - name: Include system for gnome desktop
   ansible.builtin.include_tasks:

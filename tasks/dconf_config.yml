@@ -1,0 +1,134 @@
+---
+
+- name: Get Gnome version
+  become: true
+  ansible.builtin.shell:
+    cmd: |
+      set -o pipefail
+      gnome-shell --version | awk '{print $3}' | cut -d'.' -f1
+  args:
+    executable: /bin/bash
+  register: gnome_major_version_result
+  changed_when: false
+
+- name: Set gnome major version
+  become: true
+  ansible.builtin.set_fact:
+    gnome_major_version: "{{ gnome_major_version_result.stdout }}"
+
+# Note template needs to merge this at runtime
+- name: Add enabled extensions if any
+  ansible.builtin.set_fact:
+    gnome_base_settings: >-
+      {{
+        gnome_base_settings
+        | combine({
+            'dconf_default':
+              gnome_base_settings.dconf_default
+              | combine({
+                  'org/gnome/shell/enabled-extensions':
+                    installed_gnome_extensions | to_json
+                })
+          })
+        if installed_gnome_extensions is defined
+          and installed_gnome_extensions | length > 0
+        else gnome_base_settings
+      }}
+
+- name: Write system-wide gnome dconf defaults
+  become: true
+  ansible.builtin.template:
+    src: gnome-base.j2
+    dest: "{{ gnome_systemwide_default_base }}"
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Update dconf
+
+- name: Install system-wide nautilus dconf defaults
+  become: true
+  when: "'nautilus' in ansible_facts.packages"
+  ansible.builtin.template:
+    src: gnome-nautilus.j2
+    dest: "{{ gnome_systemwide_default_nautilus }}"
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Update dconf
+
+- name: Install system-wide gnome-terminal dconf defaults
+  become: true
+  when: "'gnome-terminal' in ansible_facts.packages"
+  ansible.builtin.template:
+    src: gnome-terminal.j2
+    dest: "{{ gnome_systemwide_default_terminal }}"
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Update dconf
+
+- name: Configure gedit defaults
+  when: "'gedit' in ansible_facts.packages"
+  block:
+    - name: Create gedit user theme directory
+      become: true
+      ansible.builtin.file:
+        path: "{{ gedit_system_theme_path }}"
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
+
+    - name: Check for gtksourceview  # noqa: command-instead-of-module
+      ansible.builtin.command:
+        cmd: "rpm -q --qf '%{VERSION}\n' libgedit-gtksourceview"
+      register: libgedit_gtksourceview_result
+      changed_when: false
+      failed_when: false
+
+    - name: Ovwerwrite theme path
+      when: libgedit_gtksourceview_result.rc == 0
+      ansible.builtin.set_fact:
+        gedit_custom_theme_src_file: "lavanda_gtkview.xml"
+        gedit_system_theme_path: "/usr/share/libgedit-gtksourceview-300/styles"
+
+    - name: Copy gedit theme
+      become: true
+      ansible.builtin.copy:
+        src: "{{ gedit_custom_theme_src_file }}"
+        dest: "{{ gedit_system_theme_path }}/lavanda.xml"
+        owner: root
+        group: root
+        mode: "0644"
+
+    - name: Get gedit version
+      ansible.builtin.shell:
+        cmd: |
+          set -o pipefail
+          gedit --version | awk '{print $NF}' | cut -d. -f1
+        executable: /bin/bash
+      changed_when: false
+      register: gedit_version_result
+
+    - name: Install system-wide gedit dconf defaults
+      become: true
+      ansible.builtin.template:
+        src: gnome-gedit.j2
+        dest: "{{ gnome_systemwide_default_gedit }}"
+        owner: root
+        group: root
+        mode: "0644"
+      notify: Update dconf
+
+- name: Install system-wide meld dconf defaults
+  become: true
+  when: "'meld' in ansible_facts.packages"
+  ansible.builtin.template:
+    src: gnome-meld.j2
+    dest: "{{ gnome_systemwide_default_meld }}"
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Update dconf
+
+...

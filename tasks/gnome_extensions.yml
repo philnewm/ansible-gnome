@@ -28,8 +28,6 @@
 
 - name: Install extension-installer dependencies
   become: true
-  # loop: "{{ extension_installer_dependencies }}"
-  # when: item not in ansible_facts.packages
   ansible.builtin.package:
     name: "{{ extension_installer_dependencies }}"
     state: present
@@ -65,55 +63,31 @@
 
 - name: Set extensions list
   ansible.builtin.set_fact:
-    extensions: "{{ extensions_list_result.stdout_lines }}"
+    installed_gnome_extensions: "{{ extensions_list_result.stdout_lines }}"
 
 - name: Update extension persmissions
   become: true
-  loop: "{{ extensions }}"
+  loop: "{{ installed_gnome_extensions }}"
   ansible.builtin.file:
     path: "{{ extension_path_system }}/{{ item }}/metadata.json"
-    mode: "0644"
-
-- name: Ensure default gnome settings directory exists
-  become: true
-  ansible.builtin.file:
-    path: "/etc/dconf/db/local.d"
-    state: directory
-    owner: root
-    group: root
-    mode: "0755"
-
-- name: Enable gnome shell extensions by default system-wide
-  become: true
-  community.general.ini_file:
-    path: "{{ gnome_systemwide_default_base }}"
-    section: org/gnome/shell
-    option: enabled-extensions
-    value: "{{ extensions | to_json }}"
     mode: "0644"
 
 - name: Combine gnome extension dconf settings
   ansible.builtin.set_fact:
     gnome_extension_dconf_settings: >-
       {{
-        gnome_extensions
+        installed_gnome_extensions
         | selectattr('dconf_settings', 'defined')
         | map(attribute='dconf_settings')
         | list
         | ansible.builtin.combine
       }}
 
-- name: Configure system-wide extension defaults
+- name: Install system-wide gnome-extension dconf defaults
   become: true
-  loop: "{{ gnome_extension_dconf_settings | dict2items }}"
-  loop_control:
-    label: "{{ dconf_pair.key }}"
-    loop_var: dconf_pair
-  community.general.ini_file:
-    path: "{{ gnome_systemwide_extensions_default_dconf }}"
-    section: "{{ dconf_pair.key | dirname }}"
-    option: "{{ dconf_pair.key | basename }}"
-    value: "{{ dconf_pair.value | string }}"
+  ansible.builtin.template:
+    src: gnome-extensions.j2
+    dest: "{{ gnome_systemwide_extensions_default_dconf }}"
     owner: root
     group: root
     mode: "0644"

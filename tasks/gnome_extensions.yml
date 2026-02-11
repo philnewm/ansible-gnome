@@ -76,7 +76,7 @@
   ansible.builtin.set_fact:
     gnome_extension_dconf_settings: >-
       {{
-        installed_gnome_extensions
+        gnome_extensions
         | selectattr('dconf_settings', 'defined')
         | map(attribute='dconf_settings')
         | list

@@ -4,7 +4,7 @@
   ansible.builtin.package_facts:
 
 - name: Get repos on rhel based systems
-  when: ansible_distribution in gnome_rhel_derivatives
+  when: ansible_facts.distribution in gnome_rhel_derivatives
   block:
     - name: Get enabled repos
       ansible.builtin.shell:

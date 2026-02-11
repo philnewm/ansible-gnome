@@ -3,26 +3,25 @@
 - name: Get installed gnome themes
   ansible.builtin.find:
     paths: "{{ theme_paths }}"
-    file_type: "any"
+    file_type: directory
     depth: 1
   register: theme_dirs
 
-- name: Set themes list (excluding 'hicolor')
+- name: Build removable theme list
   ansible.builtin.set_fact:
-    themes: >-
+    removable_themes: >-
       {{ theme_dirs.files
+        | rejectattr('path', 'search', '/hicolor$')
         | map(attribute='path')
-        | map('basename')
-        | reject('equalto', 'hicolor')
         | list }}
 
-- name: Remove themes
+- name: Remove themes except hicolor
   become: true
-  loop: "{{ themes }}"
-  when: "'hicolor' not in item"
-  ansible.builtin.file:
-    path: "{{ item }}"
-    state: absent
+  when: removable_themes | length > 0
+  ansible.builtin.command:
+    cmd: >
+      rm -rf {{ removable_themes | join(' ') }}
+  changed_when: removable_themes | length > 0
 
 - name: Remove manual installed extensions
   become: true

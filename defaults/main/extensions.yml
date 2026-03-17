@@ -83,9 +83,9 @@ gnome_extensions:
       "org/gnome/shell/extensions/dash-to-panel/tray-size": "16"
       "org/gnome/shell/extensions/dash-to-panel/window-preview-title-position": "'TOP'"
       "org/gnome/shell/extensions/dash-to-panel/hide-overview-on-startup": "true"
-  - name: "system-monitor"
-    address: "system-monitor@paradoxxx.zero.gmail.com"
-    id: 120
+  - name: "system-monitor-next"
+    address: "system-monitor-next@paradoxxx.zero.gmail.com"
+    id: 3010
     dependencies:
       RedHat:
         - make
@@ -97,19 +97,19 @@ gnome_extensions:
         - gir1.2-clutter-1.0
         - gnome-system-monitor
     dconf_settings:
-      "org/gnome/shell/extensions/system-monitor/compact-display": "true"
-      "org/gnome/shell/extensions/system-monitor/cpu-graph-width": "50"
-      "org/gnome/shell/extensions/system-monitor/cpu-individual-cores": "false"
-      "org/gnome/shell/extensions/system-monitor/cpu-style": "'graph'"
-      "org/gnome/shell/extensions/system-monitor/disk-display": "false"
-      "org/gnome/shell/extensions/system-monitor/freq-display": "false"
-      "org/gnome/shell/extensions/system-monitor/gpu-display": "false"
-      "org/gnome/shell/extensions/system-monitor/memory-graph-width": "50"
-      "org/gnome/shell/extensions/system-monitor/memory-style": "'graph'"
-      "org/gnome/shell/extensions/system-monitor/move-clock": "true"
-      "org/gnome/shell/extensions/system-monitor/net-graph-width": "50"
-      "org/gnome/shell/extensions/system-monitor/thermal-display": "false"
-      "org/gnome/shell/extensions/system-monitor/thermal-style": "'graph'"
+      "org/gnome/shell/extensions/system-monitor-next-applet/compact-display": "true"
+      "org/gnome/shell/extensions/system-monitor-next-applet/cpu-graph-width": "50"
+      "org/gnome/shell/extensions/system-monitor-next-applet/cpu-individual-cores": "false"
+      "org/gnome/shell/extensions/system-monitor-next-applet/cpu-style": "'graph'"
+      "org/gnome/shell/extensions/system-monitor-next-applet/disk-display": "false"
+      "org/gnome/shell/extensions/system-monitor-next-applet/freq-display": "false"
+      "org/gnome/shell/extensions/system-monitor-next-applet/gpu-display": "false"
+      "org/gnome/shell/extensions/system-monitor-next-applet/memory-graph-width": "50"
+      "org/gnome/shell/extensions/system-monitor-next-applet/memory-style": "'graph'"
+      "org/gnome/shell/extensions/system-monitor-next-applet/move-clock": "true"
+      "org/gnome/shell/extensions/system-monitor-next-applet/net-graph-width": "50"
+      "org/gnome/shell/extensions/system-monitor-next-applet/thermal-display": "false"
+      "org/gnome/shell/extensions/system-monitor-next-applet/thermal-style": "'graph'"
   - name: "clipboard-indicator"
     address: "clipboard-indicator@tudmotu.com"
     id: 779

@@ -47,10 +47,9 @@ gnome_packages:
     - nautilus-nextcloud
     - gnome-photos
   ubuntu:
-    - *gnome_pkgs_default
     - ubuntu-desktop
+    - *gnome_pkgs_default
     - gnome-shell-extension-prefs
-    - gnome-control-center
     - nautilus-nextcloud
 
 gnome_obsolete_packages:

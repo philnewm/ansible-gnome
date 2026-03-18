@@ -48,6 +48,7 @@ gnome_packages:
     - gnome-photos
   ubuntu:
     - *gnome_pkgs_default
+    - ubuntu-desktop
     - gnome-shell-extension-prefs
     - gnome-control-center
     - nautilus-nextcloud

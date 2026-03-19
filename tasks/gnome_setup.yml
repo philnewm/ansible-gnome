@@ -85,6 +85,7 @@
     group: root
     mode: "0755"
 
+# Note was missing on ubuntu24.04
 - name: Ensure dconf user profile
   become: true
   ansible.builtin.copy:

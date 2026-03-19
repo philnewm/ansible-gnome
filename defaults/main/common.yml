@@ -47,7 +47,6 @@ gnome_packages:
     - nautilus-nextcloud
     - gnome-photos
   ubuntu:
-    - ubuntu-desktop
     - *gnome_pkgs_default
     - gnome-shell-extension-prefs
     - nautilus-nextcloud
@@ -68,6 +67,8 @@ gnome_obsolete_packages:
   "Debian":
     # Note gnome-remote-desktop is a part of gnome-control-center package
     - *osbolete_pkgs_default
+    - gnome-shell-extension-desktop-icons-ng
+    - gnome-shell-extension-ubuntu-dock
 
 flatpaks:
   - io.missioncenter.MissionCenter

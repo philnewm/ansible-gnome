@@ -85,4 +85,16 @@
     group: root
     mode: "0755"
 
+- name: Ensure dconf user profile
+  become: true
+  ansible.builtin.copy:
+    dest: /etc/dconf/profile/user
+    content: |
+      user-db:user
+      system-db:local
+      system-db:ibus
+    owner: root
+    group: root
+    mode: '0644'
+
 ...

@@ -6,6 +6,7 @@ install_dir: "/tmp/install"
 gnome_enable_reboot: true
 headless_mode: false
 gnome_rpm_fusion_target_distro: "EL"
+gnome_bluetooth: false
 
 gnome_gedit_plugins: ['gedit-plugins']
 
@@ -73,10 +74,6 @@ gnome_obsolete_packages:
 flatpaks:
   - io.missioncenter.MissionCenter
   - org.gtk.Gtk3theme.Adwaita-dark
-
-gnome_disabled_services:
-  - "systemd-networkd"
-  - "systemd-networkd-wait-online"
 
 gdm_config_file:
   "CentOS": "/etc/gdm/custom.conf"

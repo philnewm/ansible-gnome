@@ -1,18 +1,21 @@
 ---
 
-- name: Gather service facts
-  ansible.builtin.service_facts:
+- name: Switch off bluetooth
+  when: not gnome_bluetooth
+  block:
+    - name: Gather service facts
+      ansible.builtin.service_facts:
 
-- name: Disable obsolete services
-  become: true
-  loop: "{{ gnome_disabled_services }}"
-  loop_control:
-    loop_var: "service"
-  when: service in ansible_facts.services
-  ansible.builtin.systemd_service:
-    name: "{{ service }}"
-    state: stopped
-    enabled: false
+    - name: Disable bluetooth services
+      become: true
+      loop: "{{ system_packages_disabled_services }}"
+      loop_control:
+        loop_var: "service"
+      when: '"bluetooth.service" in ansible_facts.services.keys()'
+      ansible.builtin.systemd_service:
+        name: "bluetooth.service"
+        state: stopped
+        enabled: false
 
 - name: Set default target to graphical
   become: true

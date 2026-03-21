@@ -74,6 +74,10 @@ flatpaks:
   - io.missioncenter.MissionCenter
   - org.gtk.Gtk3theme.Adwaita-dark
 
+gnome_disabled_services:
+  - "systemd-networkd"
+  - "systemd-networkd-wait-online"
+
 gdm_config_file:
   "CentOS": "/etc/gdm/custom.conf"
   "AlmaLinux": "/etc/gdm/custom.conf"

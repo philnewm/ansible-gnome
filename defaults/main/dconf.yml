@@ -2,6 +2,7 @@ gnome_system_wide_config: true
 gnome_system_wide_dconf_dir: "/etc/dconf/db/local.d"
 gnome_systemwide_default_base: "{{ gnome_system_wide_dconf_dir }}/00-gnome-base"
 gnome_settings_fallback: "43"
+gnome_touchpad_pointer_speed: "0"
 gnome_base_settings:
   "dconf_default": &dconf_default
     "system/locale/region": "'en_GB.UTF-8'"
@@ -43,6 +44,7 @@ gnome_base_settings:
     # "/org/gnome/shell/extensions/user-theme/name": "'Yaru-magenta-dark'"
     <<: *dconf_default
     "org/gnome/desktop/interface/color-scheme": "'prefer-dark'"
+    "org/gnome/desktop/peripherals/touchpad/speed": "{{ gnome_touchpad_pointer_speed }}"
   "43": &43
     <<: *42
     "org/gnome/desktop/privacy/old-files-age": "30"

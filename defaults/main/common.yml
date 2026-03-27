@@ -37,20 +37,28 @@ gnome_packages:
     - gnome-control-center-filesystem
     - nextcloud-client-nautilus
     - gnome-photos
+    - NetworkManager-openvpn
+    - NetworkManager-openvpn-gnome
   centos: *gnome_pkgs_redhat
   almalinux: *gnome_pkgs_redhat
   rocky: *gnome_pkgs_redhat
   fedora: *gnome_pkgs_redhat
   debian:
     - *gnome_pkgs_default
+    - gnome-software-plugin-flatpak
     - gnome-shell-extension-prefs
     - gnome-control-center
     - nautilus-nextcloud
     - gnome-photos
+    - network-manager-openvpn-gnome
+    - network-manager-openvpn
   ubuntu:
     - *gnome_pkgs_default
+    - gnome-software-plugin-flatpak
     - gnome-shell-extension-prefs
     - nautilus-nextcloud
+    - network-manager-openvpn-gnome
+    - network-manager-openvpn
 
 gnome_obsolete_packages:
   "default": &osbolete_pkgs_default
@@ -74,6 +82,9 @@ gnome_obsolete_packages:
 flatpaks:
   - io.missioncenter.MissionCenter
   - org.gtk.Gtk3theme.Adwaita-dark
+  - org.zulip.Zulip
+  - org.jitsi.jitsi-meet
+  - com.bitwarden.desktop
 
 gdm_config_file:
   "CentOS": "/etc/gdm/custom.conf"

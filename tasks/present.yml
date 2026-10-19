@@ -1,5 +1,10 @@
 ---
 
+- name: Include vars file if provided
+  when: gnome_vars_file != None
+  ansible.builtin.include_vars:
+    file: "{{ gnome_vars_file }}"
+
 - name: Gather package facts
   ansible.builtin.package_facts:
 
